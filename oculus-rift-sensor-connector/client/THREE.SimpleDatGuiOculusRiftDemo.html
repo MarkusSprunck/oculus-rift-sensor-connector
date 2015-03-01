@@ -30,6 +30,7 @@ body {
         return {
                     RENDER_TEXT: "Hello World!",
                     TRANPARENT: false,
+                    USE_OCULUS_CONTROL: true,
                     ROTATION_SPEED: 2.5,
                     ROTATION_ANGLE: 0.0,
                     FONT_SIZE: 150,
@@ -124,6 +125,7 @@ body {
         gui.add(myOptions, 'TRANPARENT').name('Tranparent').onChange(function(value) {
             myOptions.OPACITY = (value) ? 80 : 100;
         });
+        gui.add(myOptions, 'USE_OCULUS_CONTROL').name('Use Oculus Control');
         gui.add(myOptions, 'OPACITY', 10, 100).step(10).name('Opacity').onChange(function(value) {
             myOptions.TRANPARENT = !(value == 100);
         });
@@ -170,9 +172,14 @@ body {
 
         onWindowResize();
 
+        controlOculus.importData();
+
         var updateTimerImport = setInterval(function() {
-            trackbarControl.update();
-            controlOculus.update();
+            if (myOptions.USE_OCULUS_CONTROL) {
+                controlOculus.update();
+            } else {
+                trackbarControl.update();
+            }
         }, 50);
     }
 

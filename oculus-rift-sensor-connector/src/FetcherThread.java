@@ -49,10 +49,10 @@ class FetcherThread implements Runnable {
 
 	private long id = 0;
 
-	private SensorData sensorData = new SensorData(0, 0, 0, 0, 0, 0, 0, 0);
+	private static SensorData sensorData = new SensorData();
 
 	public synchronized String getLatestData() {
-		return "oculus_rift_callback({\"values\" : " + this.sensorData.toString() + "});";
+		return "oculus_rift_callback({\"values\" : " + FetcherThread.sensorData.toString() + "});";
 	}
 
 	public FetcherThread(final Hmd hmd) {
@@ -63,11 +63,12 @@ class FetcherThread implements Runnable {
 	public void run() {
 		while (true) {
 
+			final TrackingState sensorState = this.hmd.getSensorState(Hmd.getTimeInSeconds());
+			final OvrVector3f pos = sensorState.HeadPose.Pose.Position;
+			final OvrQuaternionf quat = sensorState.HeadPose.Pose.Orientation;
+			
 			synchronized (this) {
-				final TrackingState sensorState = this.hmd.getSensorState(Hmd.getTimeInSeconds());
-				final OvrVector3f pos = sensorState.HeadPose.Pose.Position;
-				final OvrQuaternionf quat = sensorState.HeadPose.Pose.Orientation;
-				this.sensorData = new SensorData(this.id++, pos.x, pos.y, pos.z, quat.x, quat.y, quat.z, quat.w);
+				FetcherThread.sensorData.setSensorData(this.id++, pos.x, pos.y, pos.z, quat.x, quat.y, quat.z, quat.w);
 			}
 
 			try {
@@ -80,10 +81,16 @@ class FetcherThread implements Runnable {
 
 	public static class SensorData {
 
-		private final long id;
-		private final double px, py, pz, qx, qy, qz, qw;
+		private long id = 0;
+		private double px = 0.0;
+		private double py = 0.0;
+		private double pz = 0.0;
+		private double qx = 0.0;
+		private double qy = 0.0;
+		private double qz = 0.0;
+		private double qw = 0.0;
 
-		public SensorData(final long id, final double px, final double py, final double pz, final double qx,
+		public void setSensorData(final long id, final double px, final double py, final double pz, final double qx,
 				final double qy, final double qz, final double qw) {
 			this.id = id;
 			this.px = px;
@@ -97,7 +104,7 @@ class FetcherThread implements Runnable {
 
 		@Override
 		public String toString() {
-			return String.format(Locale.US, "[%d, %f,  %f,  %f, %f, %f,  %f,  %f]", this.id, this.px, this.py, this.pz,
+			return String.format(Locale.US, "[%d, %.15f,  %.15f,  %.15f, %.15f, %.15f,  %.15f,  %.15f]", this.id, this.px, this.py, this.pz,
 					this.qx, this.qy, this.qz, this.qw);
 		}
 	}

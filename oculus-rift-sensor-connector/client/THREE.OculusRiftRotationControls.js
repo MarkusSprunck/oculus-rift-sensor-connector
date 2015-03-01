@@ -20,11 +20,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-var g_oculusRiftSensor = [0, 0, 0, 0, 0, 0, 0, 0];
+var g_oculusRiftSensorData = [0, 0, 0, 0, 0, 0, 0, 0];
 
 function oculus_rift_callback(input_model) {
     "use strict";
-    g_oculusRiftSensor = input_model.values;
+    g_oculusRiftSensorData = input_model.values;
 }
 
 THREE.OculusRiftRotationControls = function(camera) {
@@ -33,41 +33,39 @@ THREE.OculusRiftRotationControls = function(camera) {
     this.camera = camera;
     this.lastId = -1;
 
+    this.controller = new THREE.Object3D();
+    this.headPos = new THREE.Vector3();
+    this.headQuat = new THREE.Quaternion();
+
     this.update = function() {
 
-        // console.log(g_oculusRiftSensor);
-
-        if (g_oculusRiftSensor) {
+        if (g_oculusRiftSensorData) {
 
             // UPDATE IF NEW DATA ARE AVAILABLE
-            var id = g_oculusRiftSensor[0];
+            var id = g_oculusRiftSensorData[0];
             if (id > this.lastId) {
 
-                // GET ROTATION OF OCULUS RIFT
-                var x = g_oculusRiftSensor[4];
-                var y = g_oculusRiftSensor[5];
-                var z = g_oculusRiftSensor[6];
-                var w = g_oculusRiftSensor[7];
-                var quaternion = new THREE.Quaternion(x, y, z, w);
+                this.headPos.set(g_oculusRiftSensorData[1] * 500.0, g_oculusRiftSensorData[2] * 500.0,
+                            g_oculusRiftSensorData[3] * 500.0 + 900);
+                this.headQuat.set(g_oculusRiftSensorData[4], g_oculusRiftSensorData[5], g_oculusRiftSensorData[6],
+                            g_oculusRiftSensorData[7]);
 
-                // APPLY ROTATION TO CAMERA
-                this.camera.quaternion.multiply(quaternion);
+                this.camera.setRotationFromQuaternion(this.headQuat);
+                this.controller.setRotationFromMatrix(this.camera.matrix);
+                this.camera.position.addVectors(this.controller.position, this.headPos);
+
             }
             this.lastId = id;
 
-            // REQUEST NEW DATA
-            var currentTime = new Date().getTime();
-            var deltaTime = currentTime - g_lastUpdateRequest;
-            // console.log("time=" + deltaTime);
-
-            importAgentData();
+            // Request new data
+            this.importData();
         }
 
     };
 
     var g_lastUpdateRequest = new Date().getTime();
 
-    function importAgentData() {
+    this.importData = function() {
         "use strict";
 
         g_lastUpdateRequest = new Date().getTime();
@@ -77,7 +75,6 @@ THREE.OculusRiftRotationControls = function(camera) {
         script.id = 'JSONP';
         url += "?" + g_lastUpdateRequest;
         script.setAttribute("src", url);
-
         document.body.appendChild(script);
         setTimeout(function() {
             var script;
