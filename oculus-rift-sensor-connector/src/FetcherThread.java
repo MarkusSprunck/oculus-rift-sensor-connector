@@ -30,8 +30,8 @@
  */
 
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 import com.oculusvr.capi.Hmd;
 import com.oculusvr.capi.OvrQuaternionf;
@@ -73,7 +73,7 @@ class FetcherThread implements Runnable {
 			try {
 				Thread.sleep(1);
 			} catch (final InterruptedException ex) {
-				LOGGER.log(Level.SEVERE, null, ex);
+				LOGGER.error(ex.getMessage());
 			}
 		}
 	}

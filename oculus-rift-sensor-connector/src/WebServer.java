@@ -36,8 +36,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 /**
  * The class is a minimal web server to provide data to a external client of the
@@ -72,8 +72,10 @@ public class WebServer extends Thread {
 				final InputStream in = new BufferedInputStream(connection.getInputStream());
 				final String request = readFirstLineOfRequest(in);
 
-				if (request.startsWith("GET /terminate")) {
-					isRunning = false;
+				if (request.indexOf("terminate") != -1) {
+					LOGGER.info("called terminate");
+					LOGGER.info("server stopped");
+					System.exit(0);
 				} else {
 
 					if (request.indexOf("HTTP/1.1") != -1) {
@@ -89,7 +91,7 @@ public class WebServer extends Thread {
 					out.write(data.getBytes());
 					out.flush();
 
-					LOGGER.log(Level.FINEST, data);
+					LOGGER.debug(data);
 				}
 
 				// Close all resources
@@ -99,13 +101,17 @@ public class WebServer extends Thread {
 			}
 
 		} catch (final IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage());
+			LOGGER.error(e.getMessage());
+			LOGGER.info("server stopped");
+			System.exit(0);
 		}
 
 		try {
 			server.close();
 		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage());
+			LOGGER.error(e.getMessage());
+			LOGGER.info("server stopped");
+				System.exit(0);
 		}
 	}
 

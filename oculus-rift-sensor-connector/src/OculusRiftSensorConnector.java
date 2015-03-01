@@ -34,8 +34,9 @@ import static com.oculusvr.capi.OvrLibrary.ovrTrackingCaps.ovrTrackingCap_Orient
 import static com.oculusvr.capi.OvrLibrary.ovrTrackingCaps.ovrTrackingCap_Position;
 
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import com.oculusvr.capi.Hmd;
 
@@ -46,47 +47,49 @@ public class OculusRiftSensorConnector {
 
 	private static final Logger LOGGER = Logger.getLogger(OculusRiftSensorConnector.class.getName());
 
-	private static final int port = 80801;
+	private static final int port = 8444;
 
 	public static void main(final String[] args) throws UnknownHostException {
 
-		LOGGER.log(Level.INFO, "Oculus Rift Sensor Connector is starting");
+		PropertyConfigurator.configure("log4j.properties");
+
+		LOGGER.info("Oculus Rift Sensor Connector is starting");
 
 		Hmd.initialize();
 		try {
 			Thread.sleep(500);
 		} catch (final InterruptedException e) {
-			LOGGER.log(Level.SEVERE, "Wait not possible ", e);
+			LOGGER.error("Wait not possible ", e);
 		}
 		final Hmd hmd = Hmd.create(0);
 		if (hmd != null) {
 			hmd.configureTracking(ovrTrackingCap_Orientation | ovrTrackingCap_MagYawCorrection
 					| ovrTrackingCap_Position, 0);
 
-			LOGGER.log(Level.INFO, "Oculus Rift is ready");
+			LOGGER.info("Oculus Rift is ready");
 
 			final FetcherThread target = new FetcherThread(hmd);
 			final Thread t1 = new Thread(target);
 			t1.start();
-			LOGGER.log(Level.INFO, "Fetcher thread started");
+			LOGGER.info("Fetcher thread started");
 
 			final Thread serverThread = new WebServer(port, target);
 			serverThread.start();
-			LOGGER.log(Level.INFO, "HTTP Server started at url: http:\\\\localhost:" + port);
+			LOGGER.info("HTTP Server started at url: http:\\\\localhost:" + port);
 
 			try {
 				t1.join();
 			} catch (final InterruptedException ex) {
-				Logger.getLogger(OculusRiftSensorConnector.class.getName()).log(Level.SEVERE, null, ex);
+				LOGGER.error(ex.getMessage());
 			}
 			hmd.destroy();
 			Hmd.shutdown();
 
 		} else {
-			LOGGER.log(Level.SEVERE, "Unable to get data from Oculus Rift, maybe device is not properly connected");
+			LOGGER.error("Unable to get data from Oculus Rift, maybe device is not properly connected");
 		}
 
-		LOGGER.log(Level.INFO, "Oculus Rift Sensor Connector is stopped");
+		LOGGER.info("Oculus Rift Sensor Connector is stopped");
 	}
 
 }
