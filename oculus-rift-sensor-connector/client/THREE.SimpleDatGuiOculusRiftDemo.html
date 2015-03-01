@@ -9,19 +9,6 @@ body {
 	background-color: #000;
 	overflow: hidden;
 }
-
-.absoluteTitle {
-	position: absolute;
-	bottom: 0px;
-	left: 0px;
-	color: #999;
-	font-family: Arial;
-	font-size: 9pt;
-	text-align: left;
-	padding-left: 10px;
-	padding-right: 10px;
-	padding-bottom: 15px;
-}
 </style>
 </head>
 <body>
@@ -35,8 +22,6 @@ body {
 <script src="./THREE.SimpleDatGui.js"></script>
 <script src="./THREE.OculusRiftMousePointerHelper.js"></script>
 <script src="./THREE.OculusRiftRotationControls.js"></script>
-<div class="absoluteTitle">THREE.SimpleDatGui is rendered in WebGL based on three.js without any other 3rd party library. You may use your mouse wheel to zoom and the left mouse button to rotate the scene. A click with the right mouse button resets the position of the scene. Read more <a href="http://www.sw-engineering-candies.com/blog-1/three-simpledatgui-a-simple-user-interface-for-webgl-with-the-look-feel-of-dat-gui">here</a>.
-</div>
 <script>
     var controlOculus, effect, camera, scene, renderer, mesh, gui, trackbarControl, container, hemiLight, oculusRiftMousePointerHelper;
 
