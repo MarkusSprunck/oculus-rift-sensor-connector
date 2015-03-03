@@ -15,6 +15,7 @@ body {
 <script src="./lib/three.min.js"></script>
 <script src="./lib/TrackballControls.js"></script>
 <script src="./lib/stats.min.js"></script>
+<script src="./lib/AxisHelper.js"></script>
 <script src="./lib/gentilis_regular.typeface.js"></script>
 <script src="./lib/optimer_regular.typeface.js"></script>
 <script src="./lib/helvetiker_regular.typeface.js"></script>
@@ -23,33 +24,28 @@ body {
 <script src="./THREE.OculusRiftMousePointerHelper.js"></script>
 <script src="./THREE.OculusRiftRotationControls.js"></script>
 <script>
-    var controlOculus, effect, camera, scene, renderer, mesh, gui, trackbarControl, container, hemiLight, oculusRiftMousePointerHelper;
+    var axis, controlOculus, effect, camera, scene, renderer, mesh, gui, trackbarControl, container, hemiLight, oculusRiftMousePointerHelper;
 
     function myOptionsDefinition() {
         "use strict";
         return {
                     RENDER_TEXT: "Hello World!",
                     TRANPARENT: false,
-                    USE_OCULUS_CONTROL: true,
+                    USE_OCULUS_CONTROL: false,
                     ROTATION_SPEED: 2.5,
                     ROTATION_ANGLE: 0.0,
                     FONT_SIZE: 150,
-                    ROTATION_X_AXIS: true,
+                    ROTATION_X_AXIS: false,
                     OPACITY: 100,
                     FONT_NAME: "Gentilis"
         };
     }
     var myOptions = myOptionsDefinition();
 
-    var guiDefaultWidth = 300;
-    var guiBorderTop = 10;
-    var guiBorderRight = 10;
-    var guiBorderLeft = 10;
-    var guiHudModus = !(document.location.search === "?hud=false");
-
     var sceneDistance = 700;
 
     init();
+    
     animate();
 
     function init() {
@@ -71,7 +67,10 @@ body {
 
         scene = new THREE.Scene();
         scene.add(camera);
-
+        
+        axis = new THREE.AxisHelper(75);
+		scene.add(axis);
+		 
         effect = new THREE.OculusRiftEffect(renderer);
         effect.setSize(window.innerWidth, window.innerHeight);
 
@@ -112,7 +111,8 @@ body {
                     renderer: renderer,
                     width: 280,
                     scale: 1.0,
-                    position: new THREE.Vector3(-140, 80, 400)
+                    position: new THREE.Vector3(-140, -150, 300),
+                    rotationX : -Math.PI / 6
         });
 
         oculusRiftMousePointerHelper = new THREE.OculusRiftMousePointerHelper({
