@@ -1069,14 +1069,14 @@ THREE.SimpleDatGuiControl.__internals.prototype.createCheckBoxes = function(even
         size: 7 * $.SCALE
     });
     var _geometry = new THREE.ShapeGeometry(fontshapes);
-    var _material = new THREE.MeshLambertMaterial($.MATERIAL);
+    var _material = new THREE.MeshBasicMaterial($.MATERIAL);
     that.wBoxChecked = new THREE.Mesh(_geometry, _material);
     that.wBoxChecked.visible = false;
     that.wBoxChecked.material.color.setHex($.COLOR_COMBOBOX_TEXT);
     that.wBoxChecked.updateRendering = function(index) {
         var x = $.TAB_1.x + $.CHECKBOX.x / 2 - 3 * $.SCALE;
         var y = $.AREA.y * (-0.5 - index) - 3.5 * $.SCALE;
-        var z = $.AREA.z + $.DELTA_Z_ORDER * 2;
+        var z = $.AREA.z + $.DELTA_Z_ORDER * 3;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;

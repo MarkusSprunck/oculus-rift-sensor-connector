@@ -31,21 +31,22 @@ body {
         return {
                     RENDER_TEXT: "Hello World!",
                     TRANPARENT: false,
-                    USE_OCULUS_CONTROL: true,
+                    USE_OCULUS_CONTROL: false,
                     ROTATION_SPEED: 2.5,
                     ROTATION_ANGLE: 0.0,
                     FONT_SIZE: 150,
-                    ROTATION_X_AXIS: false,
+                    ROTATION_X_AXIS: true,
                     OPACITY: 100,
                     FONT_NAME: "Gentilis"
         };
     }
     var myOptions = myOptionsDefinition();
 
-    var sceneDistance = 400;
+    var sceneDistance = 800;
+    var groundPositionY = -300;
 
     init();
-    
+
     animate();
 
     function init() {
@@ -53,38 +54,83 @@ body {
 
         // Prepare scene 
 
-        renderer = new THREE.WebGLRenderer({
-            antialias: true
-        });
-        renderer.setClearColor(0xAAAAAA);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.autoClear = false;
-        document.body.appendChild(renderer.domElement);
-
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
         camera.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, sceneDistance));
         camera.lookAt(new THREE.Vector3(0, 0, 0));
 
         scene = new THREE.Scene();
+        scene.fog = new THREE.Fog(0xcce0ff, 500, 15000);
         scene.add(camera);
-        
+
         axis = new THREE.AxisHelper(75);
-		scene.add(axis);
-		 
-        effect = new THREE.OculusRiftEffect(renderer);
-        effect.setSize(window.innerWidth, window.innerHeight);
+        // scene.add(axis);
 
         // Add lights
+        var light = new THREE.DirectionalLight(0xdfebff, 1.75);
+        light.position.set(50, 400, 50);
+        light.position.multiplyScalar(1);
 
-        var light1 = new THREE.PointLight(0xFFFFFF);
-        light1.position.set(-300, 300, 2 * camera.position.z);
-        light1.lookAt(new THREE.Vector3(0, 0, 0));
-        scene.add(light1);
+        light.castShadow = true;
+        var d = 1000;
+        light.shadowMapWidth = 1024;
+        light.shadowMapHeight = 1024;
+        light.shadowCameraLeft = -d;
+        light.shadowCameraRight = d;
+        light.shadowCameraTop = d;
+        light.shadowCameraBottom = -d;
+        light.shadowCameraFar = 1000;
+        light.shadowDarkness = 0.4;
+        //  light.shadowCameraVisible = true;
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0xAAAAAA));
 
-        var light2 = new THREE.PointLight(0xFFFFFF);
-        light2.position.set(0, 0, -camera.position.z);
-        light2.lookAt(new THREE.Vector3(0, 0, 0));
-        scene.add(light2);
+        // sphere
+        var ballGeo = new THREE.SphereGeometry(20, 20, 20);
+        var ballMaterial = new THREE.MeshLambertMaterial({
+                    color: 0xffff00,
+                    ambient: 0xffff00
+        });
+        var sphere = new THREE.Mesh(ballGeo, ballMaterial);
+        sphere.position.set(light.position.x, light.position.y, light.position.z);
+        sphere.position.multiplyScalar(6.0);
+        sphere.receiveShadow = true;
+        sphere.castShadow = true;
+        scene.add(sphere);
+
+        // ground
+
+        var groundTexture = THREE.ImageUtils.loadTexture("./textures/grasslight-big.jpg");
+        groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+        groundTexture.repeat.set(25, 25);
+        groundTexture.anisotropy = 16;
+
+        var groundMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xffffff,
+                    specular: 0x111111,
+                    map: groundTexture
+        });
+
+        var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(20000, 20000), groundMaterial);
+        mesh.position.y = groundPositionY;
+        mesh.rotation.x = -Math.PI / 2;
+        mesh.receiveShadow = true;
+        mesh.castShadow = true;
+        scene.add(mesh);
+
+        renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
+        renderer.setClearColor(scene.fog.color);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.gammaInput = true;
+        renderer.gammaOutput = true;
+        renderer.shadowMapEnabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        // Oculus rift
+
+        effect = new THREE.OculusRiftEffect(renderer);
+        effect.setSize(window.innerWidth, window.innerHeight);
 
         // Add content 
 
@@ -94,7 +140,7 @@ body {
 
         var myFunctions = {
             RESET_EVENT: function() {
-           /*     trackbarControl.reset();
+                trackbarControl.reset();
                 camera.position.x = 0;
                 camera.position.y = 0;
                 camera.position.z = sceneDistance;
@@ -102,23 +148,23 @@ body {
                 camera.rotation.y = 0;
                 camera.rotation.z = 0;
                 camera.lookAt(new THREE.Vector3(0, 0, 0));
-          */  }
+            }
         };
-        
-        trackbarControl = new THREE.TrackballControls(camera, renderer.domElement);
-        
-        var oculusPosition = new THREE.Vector3(0, 0, sceneDistance*2);
-        controlOculus = new THREE.OculusRiftRotationControls(camera, sceneDistance*2, oculusPosition);
 
-		var gui_width = 280;
-		var gui_scale = 1.5;
+        trackbarControl = new THREE.TrackballControls(camera, renderer.domElement);
+
+        var oculusPosition = new THREE.Vector3(0, 0, sceneDistance * 2);
+        controlOculus = new THREE.OculusRiftRotationControls(camera, sceneDistance * 2, oculusPosition);
+
+        var gui_width = 280;
+        var gui_scale = 1.5;
         gui = new THREE.SimpleDatGui({
                     scene: scene,
                     camera: camera,
                     renderer: renderer,
                     width: gui_width,
                     scale: gui_scale,
-                    position: new THREE.Vector3(-gui_width*gui_scale/2, 0, sceneDistance*0.25)
+                    position: new THREE.Vector3(-gui_width * gui_scale / 2, 200, sceneDistance * 0.5)
         });
 
         oculusRiftMousePointerHelper = new THREE.OculusRiftMousePointerHelper({
@@ -148,7 +194,7 @@ body {
                     Small: 80,
                     Medium: 150,
                     Large: 180,
-                    Huge: 300
+                    Huge: 250
         }).name('Font Size').onChange(function(value) {
             addOrUpdateRotatingText(scene, myOptions.RENDER_TEXT);
         });
@@ -160,6 +206,7 @@ body {
                     });
         folder1.add(myOptions, 'ROTATION_X_AXIS').name('Rotation Active');
         folder1.open();
+        gui.close();
 
         // Add event listeners
         window.addEventListener('resize', onWindowResize, false);
@@ -170,7 +217,6 @@ body {
             }
         });
 
-  
         // Mouse Pointer
 
         onWindowResize();
@@ -184,6 +230,7 @@ body {
                 trackbarControl.update();
             }
         }, 50);
+
     }
 
     function onWindowResize() {
@@ -201,13 +248,14 @@ body {
 
         gui.setOpacity(myOptions.OPACITY);
         gui.update();
-
         oculusRiftMousePointerHelper.update();
 
         if (myOptions.ROTATION_X_AXIS) {
             mesh.rotation.x = (mesh.rotation.x + 0.005 * myOptions.ROTATION_SPEED) % (Math.PI * 2);
             myOptions.ROTATION_ANGLE = mesh.rotation.x;
         }
+
+        camera.position.y = Math.max(camera.position.y, groundPositionY + 20)
 
         effect.render(scene, camera);
     }
@@ -231,11 +279,13 @@ body {
                     size: myOptions.FONT_SIZE,
                     font: myOptions.FONT_NAME.toLowerCase()
         });
-        var material = new THREE.MeshPhongMaterial({
-            color: 0x1ed36f
+        var material = new THREE.MeshLambertMaterial({
+                    color: 0x0033AA,
+                    ambient: 0x0066FF
         });
         mesh = new THREE.Mesh(geometry, material);
-
+        mesh.receiveShadow = true;
+        mesh.castShadow = true;
         mesh.rotation.x = oldRotationX;
 
         geometry.computeBoundingBox();

@@ -59,7 +59,7 @@ THREE.OculusRiftMousePointerHelper = function(parameters) {
 
     function addPoint(id) {
         geometryBorders.vertices.push(new THREE.Vector3());
-        geometryBorders.colors.push(new THREE.Color(0xFF5500));
+        geometryBorders.colors.push(new THREE.Color(0xFF0000));
         if (that.pointMapBorders[id] === undefined) {
             that.pointMapBorders[id] = [];
         }
@@ -68,7 +68,8 @@ THREE.OculusRiftMousePointerHelper = function(parameters) {
 
     var materialBorders = new THREE.LineBasicMaterial({
                 color: 0xffffff,
-                vertexColors: THREE.FaceColors
+                vertexColors: THREE.FaceColors,
+                linewidth: 2
     });
     THREE.Line.call(this, geometryBorders, materialBorders, THREE.Mesh);
 
