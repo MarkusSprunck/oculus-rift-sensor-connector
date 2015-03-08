@@ -27,11 +27,13 @@ function oculus_rift_callback(input_model) {
     g_oculusRiftSensorData = input_model.values;
 }
 
-THREE.OculusRiftRotationControls = function(camera) {
+THREE.OculusRiftRotationControls = function(camera, scale, position) {
 
     var that = this;
     this.camera = camera;
     this.lastId = -1;
+    this.scale = scale;
+    this.position = position;
 
     this.controller = new THREE.Object3D();
     this.headPos = new THREE.Vector3();
@@ -45,8 +47,8 @@ THREE.OculusRiftRotationControls = function(camera) {
             var id = g_oculusRiftSensorData[0];
             if (id > this.lastId) {
 
-                this.headPos.set(g_oculusRiftSensorData[1] * 500.0, g_oculusRiftSensorData[2] * 500.0,
-                            g_oculusRiftSensorData[3] * 500.0 + 900);
+                this.headPos.set(g_oculusRiftSensorData[1] * this.scale + this.position.x, g_oculusRiftSensorData[2]
+                            * this.scale + this.position.y, g_oculusRiftSensorData[3] * this.scale + this.position.z);
                 this.headQuat.set(g_oculusRiftSensorData[4], g_oculusRiftSensorData[5], g_oculusRiftSensorData[6],
                             g_oculusRiftSensorData[7]);
 

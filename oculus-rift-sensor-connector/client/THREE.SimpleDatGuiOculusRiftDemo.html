@@ -21,8 +21,8 @@ body {
 <script src="./lib/helvetiker_regular.typeface.js"></script>
 <script src="./lib/OculusRiftEffect.js"></script>
 <script src="./THREE.SimpleDatGui.js"></script>
-<script src="./THREE.OculusRiftMousePointerHelper.js"></script>
-<script src="./THREE.OculusRiftRotationControls.js"></script>
+<script src="./THREE.OculusRiftMouse.js"></script>
+<script src="./THREE.OculusRiftControls.js"></script>
 <script>
     var axis, controlOculus, effect, camera, scene, renderer, mesh, gui, trackbarControl, container, hemiLight, oculusRiftMousePointerHelper;
 
@@ -31,7 +31,7 @@ body {
         return {
                     RENDER_TEXT: "Hello World!",
                     TRANPARENT: false,
-                    USE_OCULUS_CONTROL: false,
+                    USE_OCULUS_CONTROL: true,
                     ROTATION_SPEED: 2.5,
                     ROTATION_ANGLE: 0.0,
                     FONT_SIZE: 150,
@@ -42,7 +42,7 @@ body {
     }
     var myOptions = myOptionsDefinition();
 
-    var sceneDistance = 700;
+    var sceneDistance = 400;
 
     init();
     
@@ -94,7 +94,7 @@ body {
 
         var myFunctions = {
             RESET_EVENT: function() {
-                trackbarControl.reset();
+           /*     trackbarControl.reset();
                 camera.position.x = 0;
                 camera.position.y = 0;
                 camera.position.z = sceneDistance;
@@ -102,17 +102,23 @@ body {
                 camera.rotation.y = 0;
                 camera.rotation.z = 0;
                 camera.lookAt(new THREE.Vector3(0, 0, 0));
-            }
+          */  }
         };
+        
+        trackbarControl = new THREE.TrackballControls(camera, renderer.domElement);
+        
+        var oculusPosition = new THREE.Vector3(0, 0, sceneDistance*2);
+        controlOculus = new THREE.OculusRiftRotationControls(camera, sceneDistance*2, oculusPosition);
 
+		var gui_width = 280;
+		var gui_scale = 1.5;
         gui = new THREE.SimpleDatGui({
                     scene: scene,
                     camera: camera,
                     renderer: renderer,
-                    width: 280,
-                    scale: 1.0,
-                    position: new THREE.Vector3(-140, -150, 300),
-                    rotationX : -Math.PI / 6
+                    width: gui_width,
+                    scale: gui_scale,
+                    position: new THREE.Vector3(-gui_width*gui_scale/2, 0, sceneDistance*0.25)
         });
 
         oculusRiftMousePointerHelper = new THREE.OculusRiftMousePointerHelper({
@@ -164,10 +170,7 @@ body {
             }
         });
 
-        trackbarControl = new THREE.TrackballControls(camera, renderer.domElement);
-
-        controlOculus = new THREE.OculusRiftRotationControls(camera);
-
+  
         // Mouse Pointer
 
         onWindowResize();

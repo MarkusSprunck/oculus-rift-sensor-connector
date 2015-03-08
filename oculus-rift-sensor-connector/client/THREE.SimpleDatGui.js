@@ -846,21 +846,7 @@ THREE.SimpleDatGuiControl.__internals = function(control) {
     this.control = control;
 };
 
-THREE.SimpleDatGuiControl.__internals.prototype.rotateAndTranslateElement = function(element, $, x, y, z) {
-    "use strict";
 
-    element.rotation.x = $.ROTATION.x;
-    element.rotation.y = $.ROTATION.y;
-    element.rotation.z = $.ROTATION.z;
-
-    var vector = new THREE.Vector3(x, y, z);
-    vector.applyQuaternion($.QUATERION);
-
-    element.position.x = vector.x;
-    element.position.y = vector.y;
-    element.position.z = vector.z;
-
-}
 
 THREE.SimpleDatGuiControl.__internals.prototype.createArea = function() {
     "use strict";
@@ -875,9 +861,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createArea = function() {
     that.wArea.WebGLElement = that;
     that.wArea.updateRendering = function(index) {
 
-        var x = $.POSITION.x + $.AREA.x / 2;
-        var y = $.POSITION.y - $.AREA.y / 2 - $.AREA.y * index;
-        var z = $.POSITION.z + $.AREA.z / 2;
+        var x = $.AREA.x / 2;
+        var y = -$.AREA.y / 2 - $.AREA.y * index;
+        var z = $.AREA.z / 2;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -912,9 +898,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createValueSliderBar = function(
     that.wValueSliderBar.WebGLElement = that;
     that.wValueSliderBar.material.color.setHex($.COLOR_MARKER_NUMBER);
     that.wValueSliderBar.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_1.x + $.SLIDER.x / 2 - $.SLIDER.x * (1 - that.scaling) / 2;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index);
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER * 2;
+        var x = $.TAB_1.x + $.SLIDER.x / 2 - $.SLIDER.x * (1 - that.scaling) / 2;
+        var y = $.AREA.y * (-0.5 - index);
+        var z = $.AREA.z + $.DELTA_Z_ORDER * 2;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -939,9 +925,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createTextValue = function(value
     var _geometry = new THREE.ShapeGeometry(_fontshapes);
     that.wTextValue = new THREE.Mesh(_geometry, new THREE.MeshBasicMaterial($.MATERIAL));
     that.wTextValue.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_1.x + that.textHelper.residiumX;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index) - $.LABEL_OFFSET_Y;
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER * 2;
+        var x = $.TAB_1.x + that.textHelper.residiumX;
+        var y = $.AREA.y * (-0.5 - index) - $.LABEL_OFFSET_Y;
+        var z = $.AREA.z + $.DELTA_Z_ORDER * 2;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -965,9 +951,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createValueTextField = function(
     that.wValueTextField.WebGLElement = that;
     that.wValueTextField.material.color.setHex($.COLOR_VALUE_FIELD);
     that.wValueTextField.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_1.x + $.TEXT.x / 2;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index);
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER;
+        var x = $.TAB_1.x + $.TEXT.x / 2;
+        var y = $.AREA.y * (-0.5 - index);
+        var z = $.AREA.z + $.DELTA_Z_ORDER;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -990,9 +976,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createValueSliderField = functio
     that.wValueSliderField.WebGLElement = that;
     that.wValueSliderField.material.color.setHex($.COLOR_VALUE_FIELD);
     that.wValueSliderField.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_1.x + $.SLIDER.x / 2;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index);
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER;
+        var x = $.TAB_1.x + $.SLIDER.x / 2;
+        var y = $.AREA.y * (-0.5 - index);
+        var z = $.AREA.z + $.DELTA_Z_ORDER;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1013,9 +999,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createValueField = function(even
     _material.color.setHex($.COLOR_VALUE_FIELD);
     that.wValueField = new THREE.Mesh(_geometry, _material);
     that.wValueField.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_2.x + $.NUMBER.x / 2;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index);
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER;
+        var x = $.TAB_2.x + $.NUMBER.x / 2;
+        var y = $.AREA.y * (-0.5 - index);
+        var z = $.AREA.z + $.DELTA_Z_ORDER;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1044,9 +1030,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createNumberValue = function(val
     that.wValue = new THREE.Mesh(_geometry, new THREE.MeshBasicMaterial($.MATERIAL));
     that.wValue.material.color.setHex($.COLOR_MARKER_NUMBER);
     that.wValue.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_2.x + $.OFFSET_X;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index) - $.LABEL_OFFSET_Y;
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER * 2;
+        var x = $.TAB_2.x + $.OFFSET_X;
+        var y = $.AREA.y * (-0.5 - index) - $.LABEL_OFFSET_Y;
+        var z = $.AREA.z + $.DELTA_Z_ORDER * 2;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1068,9 +1054,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createCheckBoxes = function(even
     that.wBoxUnChecked = new THREE.Mesh(_geometry, _material);
     that.wBoxUnChecked.visible = false;
     that.wBoxUnChecked.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_1.x + $.CHECKBOX.x / 2;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index);
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER;
+        var x = $.TAB_1.x + $.CHECKBOX.x / 2;
+        var y = $.AREA.y * (-0.5 - index);
+        var z = $.AREA.z + $.DELTA_Z_ORDER;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1088,9 +1074,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createCheckBoxes = function(even
     that.wBoxChecked.visible = false;
     that.wBoxChecked.material.color.setHex($.COLOR_COMBOBOX_TEXT);
     that.wBoxChecked.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_1.x + $.CHECKBOX.x / 2 - 3 * $.SCALE;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index) - 3.5 * $.SCALE;
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER * 2;
+        var x = $.TAB_1.x + $.CHECKBOX.x / 2 - 3 * $.SCALE;
+        var y = $.AREA.y * (-0.5 - index) - 3.5 * $.SCALE;
+        var z = $.AREA.z + $.DELTA_Z_ORDER * 2;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1117,11 +1103,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createLabel = function(name) {
         var WEBGL_CLOSE_LABEL_OFFSET_X = 30 * $.SCALE;
         var LABEL_OFFSET_X = 10 * $.SCALE;
         var folderOffset = (that.isElementFolder) ? 8 * $.SCALE : 0;
-        var x = $.POSITION.x
-                    + ((that.isCloseButton) ? ($.AREA.x / 2 - WEBGL_CLOSE_LABEL_OFFSET_X)
-                                : (LABEL_OFFSET_X + folderOffset));
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index) - $.LABEL_OFFSET_Y;
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER;
+        var x = ((that.isCloseButton) ? ($.AREA.x / 2 - WEBGL_CLOSE_LABEL_OFFSET_X) : (LABEL_OFFSET_X + folderOffset));
+        var y = $.AREA.y * (-0.5 - index) - $.LABEL_OFFSET_Y;
+        var z = $.AREA.z + $.DELTA_Z_ORDER;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1150,9 +1134,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createLabelMarker = function() {
     that.wLabelMarker = new THREE.Mesh(_geometry, _material);
     that.wLabelMarker.material.color.setHex($.COLOR_LABEL);
     that.wLabelMarker.updateRendering = function(index) {
-        var x = $.POSITION.x + 10 * $.SCALE;
-        var y = $.POSITION.y - $.AREA.y / 2 - $.AREA.y * index;
-        var z = $.POSITION.z + $.AREA.z / 2 + $.DELTA_Z_ORDER;
+        var x = 10 * $.SCALE;
+        var y = -$.AREA.y / 2 - $.AREA.y * index;
+        var z = $.AREA.z / 2 + $.DELTA_Z_ORDER;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1187,9 +1171,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createMarker = function() {
         that.wMarker.material.color.setHex($.COLOR_MARKER_NUMBER);
     }
     that.wMarker.updateRendering = function(index) {
-        var x = $.POSITION.x + $.MARKER.x / 2 - 0.1 * $.SCALE;
-        var y = $.POSITION.y - $.AREA.y / 2 - $.AREA.y * index;
-        var z = $.POSITION.z + $.AREA.z / 2 + $.DELTA_Z_ORDER;
+        var x = $.MARKER.x / 2 - 0.1 * $.SCALE;
+        var y = -$.AREA.y / 2 - $.AREA.y * index;
+        var z = $.AREA.z / 2 + $.DELTA_Z_ORDER;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1232,9 +1216,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createFrame = function() {
     that.wFrame = new THREE.Line(_geometry, new THREE.LineBasicMaterial($.MATERIAL));
     that.wFrame.material.color.setHex($.COLOR_BODER);
     that.wFrame.updateRendering = function(index) {
-        var x = $.POSITION.x + $.AREA.x / 2 - 0.1;
-        var y = $.POSITION.y - $.AREA.y / 2 - $.AREA.y * index;
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER;
+        var x = $.AREA.x / 2 - 0.1;
+        var y = -$.AREA.y / 2 - $.AREA.y * index;
+        var z = $.AREA.z + $.DELTA_Z_ORDER;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1257,9 +1241,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createCursor = function() {
     that.wCursor.updateRendering = function(index) {
         var possiblePositon = that.textHelper.possibleCursorPositons[that.textHelper.cursor - that.textHelper.start];
         if (typeof possiblePositon !== "undefined") {
-            var x = $.POSITION.x + $.TAB_1.x + that.textHelper.residiumX + possiblePositon.x + 0.25 * $.SCALE;
-            var y = $.POSITION.y + $.AREA.y * (-0.5 - index);
-            var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER * 2;
+            var x = $.TAB_1.x + that.textHelper.residiumX + possiblePositon.x + 0.25 * $.SCALE;
+            var y = $.AREA.y * (-0.5 - index);
+            var z = $.AREA.z + $.DELTA_Z_ORDER * 2;
             internal.rotateAndTranslateElement(this, $, x, y, z);
 
             this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1286,9 +1270,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createComboBoxField = function(e
     that.wComboBoxTextField.visible = false;
     that.wComboBoxTextField.WebGLElement = that;
     that.wComboBoxTextField.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_1.x + $.TEXT.x / 2;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index);
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER * 3;
+        var x = $.TAB_1.x + $.TEXT.x / 2;
+        var y = $.AREA.y * (-0.5 - index);
+        var z = $.AREA.z + $.DELTA_Z_ORDER * 3;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1320,9 +1304,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createComboBoxListFields = funct
         wComboBoxListField.WebGLElement = that;
         wComboBoxListField.text = text;
         wComboBoxListField.updateRendering = function(index, fIndex) {
-            var x = $.POSITION.x + $.TAB_1.x + $.TEXT.x / 2;
-            var y = $.POSITION.y + $.AREA.y * (-0.5 - index) - (1 + fIndex) * $.TEXT.y;
-            var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER * (that.isComboBoxExpanded() ? 5 : -1);
+            var x = $.TAB_1.x + $.TEXT.x / 2;
+            var y = $.AREA.y * (-0.5 - index) - (1 + fIndex) * $.TEXT.y;
+            var z = $.AREA.z + $.DELTA_Z_ORDER * (that.isComboBoxExpanded() ? 5 : -1);
             internal.rotateAndTranslateElement(this, $, x, y, z);
 
             this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1339,9 +1323,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createComboBoxListFields = funct
         var wComboBoxTextValue = new THREE.Mesh(_geometry, new THREE.MeshBasicMaterial($.MATERIAL));
         wComboBoxTextValue.material.color.setHex($.COLOR_COMBOBOX_TEXT);
         wComboBoxTextValue.updateRendering = function(index, filedIndex) {
-            var x = $.POSITION.x + $.TAB_1.x + that.textHelper.residiumX;
-            var y = $.POSITION.y + $.AREA.y * (-0.5 - index) - $.LABEL_OFFSET_Y - (1 + filedIndex) * $.TEXT.y;
-            var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER * (that.isComboBoxExpanded() ? 6 : -1);
+            var x = $.TAB_1.x + that.textHelper.residiumX;
+            var y = $.AREA.y * (-0.5 - index) - $.LABEL_OFFSET_Y - (1 + filedIndex) * $.TEXT.y;
+            var z = $.AREA.z + $.DELTA_Z_ORDER * (that.isComboBoxExpanded() ? 6 : -1);
             internal.rotateAndTranslateElement(this, $, x, y, z);
 
             this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1369,9 +1353,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createComboBoxText = function() 
     that.wComboBoxText = new THREE.Mesh(_geometry, new THREE.MeshBasicMaterial($.MATERIAL));
     that.wComboBoxText.material.color.setHex($.COLOR_COMBOBOX_TEXT);
     that.wComboBoxText.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_1.x + that.textHelper.residiumX;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index) - $.LABEL_OFFSET_Y;
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER * 4;
+        var x = $.TAB_1.x + that.textHelper.residiumX;
+        var y = $.AREA.y * (-0.5 - index) - $.LABEL_OFFSET_Y;
+        var z = $.AREA.z + $.DELTA_Z_ORDER * 4;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1400,9 +1384,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createComboBoxMarker = function(
     that.wComboBoxMarker = new THREE.Mesh(_geometry, _material);
     that.wComboBoxMarker.material.color.setHex($.COLOR_COMBOBOX_ARROW);
     that.wComboBoxMarker.updateRendering = function(index) {
-        var x = $.POSITION.x + $.AREA.x - 12 * $.SCALE;
-        var y = $.POSITION.y - $.AREA.y / 2 - $.AREA.y * index + 2 * $.SCALE;
-        var z = $.POSITION.z + $.AREA.z / 2 + $.DELTA_Z_ORDER * 5;
+        var x = $.AREA.x - 12 * $.SCALE;
+        var y = -$.AREA.y / 2 - $.AREA.y * index + 2 * $.SCALE;
+        var z = $.AREA.z / 2 + $.DELTA_Z_ORDER * 5;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1442,9 +1426,9 @@ THREE.SimpleDatGuiControl.__internals.prototype.createComboBoxFrame = function()
     that.wComboBoxFrame = new THREE.Line(_geometry, new THREE.LineBasicMaterial($.MATERIAL));
     that.wComboBoxFrame.material.color.setHex($.COLOR_COMBOBOX_AREA_SELECTED_FRAME);
     that.wComboBoxFrame.updateRendering = function(index) {
-        var x = $.POSITION.x + $.TAB_1.x + $.TEXT.x / 2;
-        var y = $.POSITION.y + $.AREA.y * (-0.5 - index);
-        var z = $.POSITION.z + $.AREA.z + $.DELTA_Z_ORDER * 5;
+        var x = $.TAB_1.x + $.TEXT.x / 2;
+        var y = $.AREA.y * (-0.5 - index);
+        var z = $.AREA.z + $.DELTA_Z_ORDER * 5;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1453,9 +1437,35 @@ THREE.SimpleDatGuiControl.__internals.prototype.createComboBoxFrame = function()
     that.parent.scene.add(that.wComboBoxFrame);
 }
 
+THREE.SimpleDatGuiControl.__internals.prototype.rotateAndTranslateElement = function(element, $, x, y, z) {
+    "use strict";
+
+    element.rotation.x = $.ROTATION.x;
+    element.rotation.y = $.ROTATION.y;
+    element.rotation.z = $.ROTATION.z;
+
+    var vector = new THREE.Vector3(x, y, z);
+    vector.applyQuaternion($.QUATERION);
+
+    element.position.x = $.POSITION.x + vector.x;
+    element.position.y = $.POSITION.y + vector.y;
+    element.position.z = $.POSITION.z + vector.z;
+
+}
+
 THREE.SimpleDatGuiControl.prototype.updateRendering = function(index, isClosed) {
     "use strict";
 
+    this._options.ROTATION.x = this.parent.camera.rotation._x;
+    this._options.ROTATION.y = this.parent.camera.rotation._y;
+    this._options.ROTATION.z = this.parent.camera.rotation._z;
+    
+    var quaternion = new THREE.Quaternion();
+    var euler = new THREE.Euler();
+    euler.set(this.parent.camera.rotation._x, this.parent.camera.rotation._y, this.parent.camera.rotation._z, 'XYZ');
+    quaternion.setFromEuler(euler);
+    this._options.QUATERION = quaternion;
+    
     this.isClosed = isClosed;
     this.wArea.updateRendering(index);
     this.wLabel.updateRendering(index);
