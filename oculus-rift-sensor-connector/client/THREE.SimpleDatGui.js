@@ -91,6 +91,35 @@ THREE.SimpleDatGui.prototype.close = function() {
 }
 
 /**
+ * Difference to DAT.GUI - hide gui
+ */
+THREE.SimpleDatGui.prototype.hide = function() {
+    "use strict";
+
+    this._private.hidden = true;
+    return this;
+}
+
+/**
+ * Difference to DAT.GUI - hide gui
+ */
+THREE.SimpleDatGui.prototype.isHidden = function() {
+    "use strict";
+
+    return this._private.hidden;
+}
+
+/**
+ * Difference to DAT.GUI - show gui
+ */
+THREE.SimpleDatGui.prototype.show = function() {
+    "use strict";
+
+    this._private.hidden = false;
+    return this;
+}
+
+/**
  * Difference to DAT.GUI - Because all the rendering is done in the scene this
  * method should be called before the rendering. In this function for each
  * element there happens the update of visibility, color and sensitivity to
@@ -112,28 +141,28 @@ THREE.SimpleDatGui.prototype.update = function(parameters) {
         if (!child.isElementHidden) {
             indexOfVisibleControls++;
         }
-        child.updateRendering(indexOfVisibleControls, that._private.isClosed());
+        child.updateRendering(indexOfVisibleControls, that._private.isClosed() || that._private.hidden);
 
         child._private.children.forEach(function(element) {
             if (!element.isElementHidden) {
                 indexOfVisibleControls++;
             }
-            element.updateRendering(indexOfVisibleControls, that._private.isClosed());
+            element.updateRendering(indexOfVisibleControls, that._private.isClosed()|| that._private.hidden);
         });
     });
-    this._private.closeButton.updateRendering((this._private.isClosed()) ? 0 : (indexOfVisibleControls + 1), false);
+    this._private.closeButton.updateRendering((this._private.isClosed()) ? 0 : (indexOfVisibleControls + 1), that._private.hidden);
 
     // JUST VISIBLE CONTROLS INTERACT WITH MOUSE
     var that = this;
     this._private.mouseBindings = [];
     that._private.mouseBindings.push(that._private.closeButton.wArea);
 
-    if (!this._private.isClosed()) {
+    if (!this._private.isClosed() && !that._private.hidden) {
         this._private.children.forEach(function(child) {
 
             // ALL CONTROLS
             child._private.children.forEach(function(element) {
-                if (!element.isElementHidden) {
+                if (!element.isElementHidden ) {
                     if (element.isComboBoxControl()) {
                         for (var i = 0; i < element.wComboBoxListFields.length; i++) {
                             that._private.mouseBindings.push(element.wComboBoxListFields[i]);
@@ -184,8 +213,9 @@ THREE.SimpleDatGui.__internals = function(gui) {
     "use strict";
 
     this.gui = gui;
-
+ 
     // Status
+    this.hidden = false; 
     this.closed = false;
     this.opacityGui = 100;
     this.shiftPressed = false;
@@ -295,7 +325,7 @@ THREE.SimpleDatGui.prototype.getOptions = function() {
                 COLOR_MARKER_NUMBER: '0x2fa1d6',
                 COLOR_MARKER_CLOSE_SELECTED: '0x121212',
                 COLOR_MARKER_CLOSE: '0x010101',
-                COLOR_BODER: '0x2c2c2c'
+                COLOR_BODER: '0x060606'
     }
 }
 
@@ -1218,7 +1248,7 @@ THREE.SimpleDatGuiControl.__internals.prototype.createFrame = function() {
     that.wFrame.updateRendering = function(index) {
         var x = $.AREA.x / 2 - 0.1;
         var y = -$.AREA.y / 2 - $.AREA.y * index;
-        var z = $.AREA.z + $.DELTA_Z_ORDER;
+        var z = $.AREA.z + $.DELTA_Z_ORDER*2;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1466,7 +1496,7 @@ THREE.SimpleDatGuiControl.prototype.updateRendering = function(index, isClosed) 
     quaternion.setFromEuler(euler);
     this._options.QUATERION = quaternion;
     
-    this.isClosed = isClosed;
+    this.isClosed = this.parent.hidden || isClosed;
     this.wArea.updateRendering(index);
     this.wLabel.updateRendering(index);
     this.wMarker.updateRendering(index);

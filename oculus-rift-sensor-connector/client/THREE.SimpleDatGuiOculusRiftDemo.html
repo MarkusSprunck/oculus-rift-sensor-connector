@@ -9,9 +9,21 @@ body {
 	background-color: #000;
 	overflow: hidden;
 }
+
+.absoluteTitle {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	color: #666;
+	font-family: Arial;
+	font-size: 15pt;
+	text-align: center;
+}
 </style>
 </head>
 <body>
+<div class="absoluteTitle">THREE.SimpleDatGuiOculusRiftDemo.html - click right mouse button to toggle GUI and run OculusRiftSensorConnector.jar on local machine to get Oculus Rift sensor data. Fork source code on <a href="https://github.com/MarkusSprunck/oculus-rift-sensor-connector/tree/master/oculus-rift-sensor-connector">GitHub</a>.
+</div>
 <script src="./lib/three.min.js"></script>
 <script src="./lib/TrackballControls.js"></script>
 <script src="./lib/stats.min.js"></script>
@@ -24,26 +36,25 @@ body {
 <script src="./THREE.OculusRiftMouse.js"></script>
 <script src="./THREE.OculusRiftControls.js"></script>
 <script>
-    var axis, controlOculus, effect, camera, scene, renderer, mesh, gui, trackbarControl, container, hemiLight, oculusRiftMousePointerHelper;
+    var skydome, controlOculus, effect, camera, scene, renderer, mesh, gui, trackbarControl, container, hemiLight, oculusRiftMousePointerHelper;
 
     function myOptionsDefinition() {
         "use strict";
         return {
-                    RENDER_TEXT: "Hello World!",
+                    RENDER_TEXT: "",
                     TRANPARENT: false,
                     USE_OCULUS_CONTROL: false,
-                    ROTATION_SPEED: 2.5,
+                    ROTATION_SPEED: 0.5,
                     ROTATION_ANGLE: 0.0,
-                    FONT_SIZE: 150,
-                    ROTATION_X_AXIS: true,
+                    FONT_SIZE: 100,
+                    ROTATION_X_AXIS: false,
                     OPACITY: 100,
                     FONT_NAME: "Gentilis"
         };
     }
     var myOptions = myOptionsDefinition();
 
-    var sceneDistance = 800;
-    var groundPositionY = -300;
+    var sceneDistance = 200;
 
     init();
 
@@ -52,91 +63,53 @@ body {
     function init() {
         "use strict";
 
-        // Prepare scene 
+        // camera
 
-        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
+        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 4000);
         camera.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, sceneDistance));
         camera.lookAt(new THREE.Vector3(0, 0, 0));
 
+        // skydome
+
+        skydome = new THREE.Mesh(new THREE.SphereGeometry(3000, 32, 32), new THREE.MeshBasicMaterial({
+            map: THREE.ImageUtils.loadTexture('./textures/sky.jpg')
+        }));
+        skydome.scale.x = -1;
+
+        // scene 
+
         scene = new THREE.Scene();
-        scene.fog = new THREE.Fog(0xcce0ff, 500, 15000);
         scene.add(camera);
+        scene.add(skydome);
 
-        axis = new THREE.AxisHelper(75);
-        // scene.add(axis);
-
-        // Add lights
-        var light = new THREE.DirectionalLight(0xdfebff, 1.75);
-        light.position.set(50, 400, 50);
-        light.position.multiplyScalar(1);
-
-        light.castShadow = true;
-        var d = 1000;
-        light.shadowMapWidth = 1024;
-        light.shadowMapHeight = 1024;
-        light.shadowCameraLeft = -d;
-        light.shadowCameraRight = d;
-        light.shadowCameraTop = d;
-        light.shadowCameraBottom = -d;
-        light.shadowCameraFar = 1000;
-        light.shadowDarkness = 0.4;
-        //  light.shadowCameraVisible = true;
-        scene.add(light);
-        scene.add(new THREE.AmbientLight(0xAAAAAA));
-
-        // sphere
-        var ballGeo = new THREE.SphereGeometry(20, 20, 20);
-        var ballMaterial = new THREE.MeshLambertMaterial({
-                    color: 0xffff00,
-                    ambient: 0xffff00
-        });
-        var sphere = new THREE.Mesh(ballGeo, ballMaterial);
-        sphere.position.set(light.position.x, light.position.y, light.position.z);
-        sphere.position.multiplyScalar(6.0);
-        sphere.receiveShadow = true;
-        sphere.castShadow = true;
-        scene.add(sphere);
-
-        // ground
-
-        var groundTexture = THREE.ImageUtils.loadTexture("./textures/grasslight-big.jpg");
-        groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-        groundTexture.repeat.set(25, 25);
-        groundTexture.anisotropy = 16;
-
-        var groundMaterial = new THREE.MeshPhongMaterial({
-                    color: 0xffffff,
-                    specular: 0x111111,
-                    map: groundTexture
-        });
-
-        var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(20000, 20000), groundMaterial);
-        mesh.position.y = groundPositionY;
-        mesh.rotation.x = -Math.PI / 2;
-        mesh.receiveShadow = true;
-        mesh.castShadow = true;
-        scene.add(mesh);
+        // renderer
 
         renderer = new THREE.WebGLRenderer({
             antialias: true
         });
-        renderer.setClearColor(scene.fog.color);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.gammaInput = true;
         renderer.gammaOutput = true;
-        renderer.shadowMapEnabled = true;
+        renderer.shadowMapEnabled = false;
         document.body.appendChild(renderer.domElement);
 
-        // Oculus rift
+        // oculus rift effect
 
         effect = new THREE.OculusRiftEffect(renderer);
-        effect.setSize(window.innerWidth, window.innerHeight);
 
-        // Add content 
+        // oculus rift controls
 
-        addOrUpdateRotatingText(scene, myOptions.RENDER_TEXT);
+        controlOculus = new THREE.OculusRiftRotationControls(camera, 200, new THREE.Vector3(0, 0, 0));
 
-        // Add GUI
+        // oculus rift mouse pointer
+
+        oculusRiftMousePointerHelper = new THREE.OculusRiftMousePointerHelper({
+                    camera: camera,
+                    domElement: renderer.domElement
+        });
+        scene.add(oculusRiftMousePointerHelper);
+
+        // gui
 
         var myFunctions = {
             RESET_EVENT: function() {
@@ -152,9 +125,7 @@ body {
         };
 
         trackbarControl = new THREE.TrackballControls(camera, renderer.domElement);
-
-        var oculusPosition = new THREE.Vector3(0, 0, sceneDistance * 2);
-        controlOculus = new THREE.OculusRiftRotationControls(camera, sceneDistance * 2, oculusPosition);
+        trackbarControl.noZoom = true;
 
         var gui_width = 280;
         var gui_scale = 1.5;
@@ -164,20 +135,19 @@ body {
                     renderer: renderer,
                     width: gui_width,
                     scale: gui_scale,
-                    position: new THREE.Vector3(-gui_width * gui_scale / 2, 200, sceneDistance * 0.5)
+                    position: new THREE.Vector3(-gui_width * gui_scale / 2, 150, -400)
         });
-
-        oculusRiftMousePointerHelper = new THREE.OculusRiftMousePointerHelper({
-                    camera: camera,
-                    domElement: renderer.domElement
-        });
-        scene.add(oculusRiftMousePointerHelper);
 
         gui.add(myFunctions, 'RESET_EVENT').name('Reset Position');
         gui.add(myOptions, 'TRANPARENT').name('Tranparent').onChange(function(value) {
             myOptions.OPACITY = (value) ? 80 : 100;
         });
-        gui.add(myOptions, 'USE_OCULUS_CONTROL').name('Use Oculus Control');
+        gui.add(myOptions, 'USE_OCULUS_CONTROL').name('Use Oculus Control').onChange(function(value) {
+            if (!value) {
+                myFunctions.RESET_EVENT();
+            }
+        });
+
         gui.add(myOptions, 'OPACITY', 10, 100).step(10).name('Opacity').onChange(function(value) {
             myOptions.TRANPARENT = !(value == 100);
         });
@@ -186,38 +156,37 @@ body {
         });
         gui.add(myOptions, 'FONT_NAME', ['Helvetiker', 'Gentilis', 'Optimer']).name('Font Type').onChange(
                     function(value) {
-                        addOrUpdateRotatingText(scene, myOptions.RENDER_TEXT);
+                        console.log(myOptions.RENDER_TEXT);
                     });
 
         var folder1 = gui.addFolder("Advanced Options");
         folder1.add(myOptions, 'FONT_SIZE', {
-                    Small: 80,
-                    Medium: 150,
-                    Large: 180,
-                    Huge: 250
+                    Small: 50,
+                    Medium: 100
         }).name('Font Size').onChange(function(value) {
-            addOrUpdateRotatingText(scene, myOptions.RENDER_TEXT);
+            console.log(myOptions.RENDER_TEXT);
         });
         folder1.add(myOptions, 'ROTATION_SPEED', -5, 5).step(0.5).name('Rotation Speed');
         folder1.add(myOptions, 'ROTATION_ANGLE', 0, Math.PI * 2).step(0.1).name('Rotation Angle').onChange(
                     function(value) {
-                        mesh.rotation.x = myOptions.ROTATION_ANGLE;
-                        addOrUpdateRotatingText(scene, myOptions.RENDER_TEXT);
+                        skydome.rotation.y = myOptions.ROTATION_ANGLE;
                     });
         folder1.add(myOptions, 'ROTATION_X_AXIS').name('Rotation Active');
         folder1.open();
-        gui.close();
 
-        // Add event listeners
+        // event listeners
+
         window.addEventListener('resize', onWindowResize, false);
 
         renderer.domElement.addEventListener('mousedown', function(event) {
             if (event.which == 3) {
-                myFunctions.RESET_EVENT();
+                if (gui.isHidden()) {
+                    gui.show();
+                } else {
+                    gui.hide();
+                }
             }
         });
-
-        // Mouse Pointer
 
         onWindowResize();
 
@@ -251,48 +220,11 @@ body {
         oculusRiftMousePointerHelper.update();
 
         if (myOptions.ROTATION_X_AXIS) {
-            mesh.rotation.x = (mesh.rotation.x + 0.005 * myOptions.ROTATION_SPEED) % (Math.PI * 2);
-            myOptions.ROTATION_ANGLE = mesh.rotation.x;
+            skydome.rotation.y = (skydome.rotation.y + 0.005 * myOptions.ROTATION_SPEED) % (Math.PI * 2);
+            myOptions.ROTATION_ANGLE = skydome.rotation.x;
         }
-
-        camera.position.y = Math.max(camera.position.y, groundPositionY + 20)
 
         effect.render(scene, camera);
-    }
-
-    function addOrUpdateRotatingText(scene, value) {
-        "use strict";
-
-        var oldRotationX = 0;
-
-        if (typeof mesh !== "undefined") {
-            oldRotationX = mesh.rotation.x;
-            scene.remove(mesh);
-        }
-
-        if (typeof myOptions.FONT_NAME === "undefined") {
-            console.log("myOptions.FONT_NAME === undefined");
-        }
-
-        var geometry = new THREE.TextGeometry(myOptions.RENDER_TEXT, {
-                    height: myOptions.FONT_SIZE / 10,
-                    size: myOptions.FONT_SIZE,
-                    font: myOptions.FONT_NAME.toLowerCase()
-        });
-        var material = new THREE.MeshLambertMaterial({
-                    color: 0x0033AA,
-                    ambient: 0x0066FF
-        });
-        mesh = new THREE.Mesh(geometry, material);
-        mesh.receiveShadow = true;
-        mesh.castShadow = true;
-        mesh.rotation.x = oldRotationX;
-
-        geometry.computeBoundingBox();
-        geometry.textWidth = geometry.boundingBox.max.x - geometry.boundingBox.min.x;
-        mesh.translateX(-geometry.textWidth / 2);
-
-        scene.add(mesh);
     }
 </script>
 </body>
