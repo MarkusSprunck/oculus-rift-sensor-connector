@@ -147,10 +147,11 @@ THREE.SimpleDatGui.prototype.update = function(parameters) {
             if (!element.isElementHidden) {
                 indexOfVisibleControls++;
             }
-            element.updateRendering(indexOfVisibleControls, that._private.isClosed()|| that._private.hidden);
+            element.updateRendering(indexOfVisibleControls, that._private.isClosed() || that._private.hidden);
         });
     });
-    this._private.closeButton.updateRendering((this._private.isClosed()) ? 0 : (indexOfVisibleControls + 1), that._private.hidden);
+    this._private.closeButton.updateRendering((this._private.isClosed()) ? 0 : (indexOfVisibleControls + 1),
+                that._private.hidden);
 
     // JUST VISIBLE CONTROLS INTERACT WITH MOUSE
     var that = this;
@@ -162,7 +163,7 @@ THREE.SimpleDatGui.prototype.update = function(parameters) {
 
             // ALL CONTROLS
             child._private.children.forEach(function(element) {
-                if (!element.isElementHidden ) {
+                if (!element.isElementHidden) {
                     if (element.isComboBoxControl()) {
                         for (var i = 0; i < element.wComboBoxListFields.length; i++) {
                             that._private.mouseBindings.push(element.wComboBoxListFields[i]);
@@ -213,9 +214,9 @@ THREE.SimpleDatGui.__internals = function(gui) {
     "use strict";
 
     this.gui = gui;
- 
+
     // Status
-    this.hidden = false; 
+    this.hidden = false;
     this.closed = false;
     this.opacityGui = 100;
     this.shiftPressed = false;
@@ -876,8 +877,6 @@ THREE.SimpleDatGuiControl.__internals = function(control) {
     this.control = control;
 };
 
-
-
 THREE.SimpleDatGuiControl.__internals.prototype.createArea = function() {
     "use strict";
 
@@ -1248,7 +1247,7 @@ THREE.SimpleDatGuiControl.__internals.prototype.createFrame = function() {
     that.wFrame.updateRendering = function(index) {
         var x = $.AREA.x / 2 - 0.1;
         var y = -$.AREA.y / 2 - $.AREA.y * index;
-        var z = $.AREA.z + $.DELTA_Z_ORDER*2;
+        var z = $.AREA.z + $.DELTA_Z_ORDER * 2;
         internal.rotateAndTranslateElement(this, $, x, y, z);
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
@@ -1470,32 +1469,28 @@ THREE.SimpleDatGuiControl.__internals.prototype.createComboBoxFrame = function()
 THREE.SimpleDatGuiControl.__internals.prototype.rotateAndTranslateElement = function(element, $, x, y, z) {
     "use strict";
 
-    element.rotation.x = $.ROTATION.x;
-    element.rotation.y = $.ROTATION.y;
-    element.rotation.z = $.ROTATION.z;
+    element.rotation.x = this.control.parent.camera.rotation._x;
+    element.rotation.y = this.control.parent.camera.rotation._y;
+    element.rotation.z = this.control.parent.camera.rotation._z;
 
-    var vector = new THREE.Vector3(x, y, z);
+    var vector = new THREE.Vector3($.POSITION.x + x, $.POSITION.y + y, $.POSITION.z + z);
     vector.applyQuaternion($.QUATERION);
 
-    element.position.x = $.POSITION.x + vector.x;
-    element.position.y = $.POSITION.y + vector.y;
-    element.position.z = $.POSITION.z + vector.z;
+    element.position.x = vector.x;
+    element.position.y = vector.y;
+    element.position.z = vector.z;
 
 }
 
 THREE.SimpleDatGuiControl.prototype.updateRendering = function(index, isClosed) {
     "use strict";
 
-    this._options.ROTATION.x = this.parent.camera.rotation._x;
-    this._options.ROTATION.y = this.parent.camera.rotation._y;
-    this._options.ROTATION.z = this.parent.camera.rotation._z;
-    
     var quaternion = new THREE.Quaternion();
     var euler = new THREE.Euler();
     euler.set(this.parent.camera.rotation._x, this.parent.camera.rotation._y, this.parent.camera.rotation._z, 'XYZ');
     quaternion.setFromEuler(euler);
     this._options.QUATERION = quaternion;
-    
+
     this.isClosed = this.parent.hidden || isClosed;
     this.wArea.updateRendering(index);
     this.wLabel.updateRendering(index);

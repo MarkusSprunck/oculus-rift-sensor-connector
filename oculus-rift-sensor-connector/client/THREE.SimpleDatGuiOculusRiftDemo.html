@@ -67,7 +67,7 @@ body {
 
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 4000);
         camera.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, sceneDistance));
-        camera.lookAt(new THREE.Vector3(0, 0, 0));
+        camera.lookAt(new THREE.Vector3(0,0, 0));
 
         // skydome
 
@@ -125,7 +125,7 @@ body {
         };
 
         trackbarControl = new THREE.TrackballControls(camera, renderer.domElement);
-        trackbarControl.noZoom = true;
+       // trackbarControl.noZoom = true;
 
         var gui_width = 280;
         var gui_scale = 1.5;
