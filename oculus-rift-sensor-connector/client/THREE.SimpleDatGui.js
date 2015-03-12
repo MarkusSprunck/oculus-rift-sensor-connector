@@ -51,6 +51,7 @@ THREE.SimpleDatGui = function(parameters) {
     this.rotation = (parameters.rotationX !== undefined) ? new THREE.Vector3(parameters.rotationX, 0, 0)
                 : new THREE.Vector3(0, 0, 0);
     this.scale = (parameters.scale !== undefined) ? parameters.scale : 1;
+    this.automatic = (parameters.automatic !== undefined) ? parameters.automatic : false;
 
     // Don't use this - for internal use only
     this._options = this.getOptions();
@@ -1469,17 +1470,26 @@ THREE.SimpleDatGuiControl.__internals.prototype.createComboBoxFrame = function()
 THREE.SimpleDatGuiControl.__internals.prototype.rotateAndTranslateElement = function(element, $, x, y, z) {
     "use strict";
 
-    element.rotation.x = this.control.parent.camera.rotation._x;
-    element.rotation.y = this.control.parent.camera.rotation._y;
-    element.rotation.z = this.control.parent.camera.rotation._z;
+    if (this.control.parent.automatic) {
+        element.rotation.x = this.control.parent.camera.rotation._x;
+        element.rotation.y = this.control.parent.camera.rotation._y;
+        element.rotation.z = this.control.parent.camera.rotation._z;
 
-    var vector = new THREE.Vector3($.POSITION.x + x, $.POSITION.y + y, $.POSITION.z + z);
-    vector.applyQuaternion($.QUATERION);
+        var vector = new THREE.Vector3($.POSITION.x + x, $.POSITION.y + y, $.POSITION.z + z);
+        vector.applyQuaternion($.QUATERION);
 
-    element.position.x = vector.x;
-    element.position.y = vector.y;
-    element.position.z = vector.z;
+        element.position.x = vector.x;
+        element.position.y = vector.y;
+        element.position.z = vector.z;
+    } else {
+        element.rotation.x = $.ROTATION.x;
+        element.rotation.y = $.ROTATION.y;
+        element.rotation.z = $.ROTATION.z;
 
+        element.position.x = $.POSITION.x + x;
+        element.position.y = $.POSITION.y + y;
+        element.position.z = $.POSITION.z + z;
+    }
 }
 
 THREE.SimpleDatGuiControl.prototype.updateRendering = function(index, isClosed) {
