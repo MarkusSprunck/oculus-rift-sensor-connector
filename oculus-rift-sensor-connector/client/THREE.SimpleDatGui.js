@@ -69,6 +69,12 @@ THREE.SimpleDatGui.prototype.addFolder = function(name) {
     return result;
 }
 
+THREE.SimpleDatGui.prototype.setAutomatic = function(automatic) {
+    "use strict";
+
+    this.automatic = automatic;
+}
+
 /**
  * Same method as in DAT.GUI
  */

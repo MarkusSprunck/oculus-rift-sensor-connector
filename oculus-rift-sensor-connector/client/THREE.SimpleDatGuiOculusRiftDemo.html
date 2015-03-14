@@ -14,9 +14,9 @@ body {
 	position: absolute;
 	top: 0px;
 	left: 0px;
-	color: #666;
+	color: #FFAA00;
 	font-family: Arial;
-	font-size: 15pt;
+	font-size: 10pt;
 	text-align: center;
 }
 </style>
@@ -28,8 +28,6 @@ body {
 <script src="./lib/TrackballControls.js"></script>
 <script src="./lib/stats.min.js"></script>
 <script src="./lib/AxisHelper.js"></script>
-<script src="./lib/gentilis_regular.typeface.js"></script>
-<script src="./lib/optimer_regular.typeface.js"></script>
 <script src="./lib/helvetiker_regular.typeface.js"></script>
 <script src="./lib/OculusRiftEffect.js"></script>
 <script src="./THREE.SimpleDatGui.js"></script>
@@ -41,22 +39,21 @@ body {
     function myOptionsDefinition() {
         "use strict";
         return {
-                    USE_OCULUS_CONTROL: true,
+                    USE_OCULUS_CONTROL: false,
+                    AUTOMATIC: true,
                     TRANPARENT: true,
                     OPACITY: 60,
-                    TEXTURE_FILE: 'Parc de Belleville Paris',
+                    TEXTURE_FILE: 'Place de la Concorde Paris',
                     TEXTURE_FILE_RESOLUTION: 'medium',
-                    RENDER_TEXT: "Hello World!",
                     ROTATION_SPEED: 0.5,
-                    ROTATION_ANGLE: 0.0,
-                    FONT_SIZE: 100,
-                    ROTATION_X_AXIS: false,
-                    FONT_NAME: "Gentilis"
+                    ROTATION_ANGLE: Math.PI,
+                    ROTATION_AUTOMATIC: false,
+
         };
     }
     var myOptions = myOptionsDefinition();
 
-    var sceneDistance = 0;
+    var sceneDistance = 50;
     var gui_width = 280;
     var gui_scale = 1.5;
 
@@ -99,7 +96,7 @@ body {
 
         // oculus rift controls
 
-        controlOculus = new THREE.OculusRiftRotationControls(camera, 200, new THREE.Vector3(0, 0, 0));
+        controlOculus = new THREE.OculusRiftRotationControls(camera, sceneDistance, new THREE.Vector3(0, 0, 0));
 
         // oculus rift mouse pointer
 
@@ -125,7 +122,7 @@ body {
         };
 
         trackbarControl = new THREE.TrackballControls(camera, renderer.domElement);
-        // trackbarControl.noZoom = true;
+        trackbarControl.noZoom = true;
 
         gui = new THREE.SimpleDatGui({
                     scene: scene,
@@ -134,12 +131,16 @@ body {
                     width: gui_width,
                     scale: gui_scale,
                     position: new THREE.Vector3(-gui_width * gui_scale / 2, 150, -400),
-                    automatic: true
+                    automatic: myOptions.AUTOMATIC
         });
 
         gui.add(myFunctions, 'RESET_EVENT').name('Reset Position');
         gui.add(myOptions, 'TRANPARENT').name('Tranparent').onChange(function(value) {
             myOptions.OPACITY = (value) ? 60 : 100;
+        });
+        gui.add(myOptions, 'ROTATION_AUTOMATIC').name('Automatic Rotation');
+        gui.add(myOptions, 'AUTOMATIC').name('HUD Mode').onChange(function(value) {
+            gui.setAutomatic(myOptions.AUTOMATIC);
         });
         gui.add(myOptions, 'USE_OCULUS_CONTROL').name('Use Oculus Control').onChange(function(value) {
             if (!value) {
@@ -157,25 +158,15 @@ body {
                     });
 
         var folder1 = gui.addFolder("Advanced Options");
-        folder1.add(myOptions, 'RENDER_TEXT').name('Render Text').onChange(function(value) {
-            console.log(scene, myOptions.RENDER_TEXT);
-        });
-        folder1.add(myOptions, 'FONT_NAME', ['Helvetiker', 'Gentilis', 'Optimer']).name('Font Type').onChange(
-                    function(value) {
-                        console.log(myOptions.RENDER_TEXT);
-                    });
-        folder1.add(myOptions, 'FONT_SIZE', {
-                    Small: 50,
-                    Medium: 100
-        }).name('Font Size').onChange(function(value) {
-            console.log(myOptions.RENDER_TEXT);
-        });
         folder1.add(myOptions, 'OPACITY', 10, 100).step(10).name('Opacity').onChange(function(value) {
             myOptions.TRANPARENT = !(value == 100);
         });
         folder1.add(myOptions, 'ROTATION_SPEED', -5, 5).step(0.5).name('Rotation Speed');
-        folder1.add(myOptions, 'ROTATION_X_AXIS').name('Rotation Active');
-        folder1.open();
+        folder1.add(myOptions, 'ROTATION_ANGLE', 0, Math.PI * 2).step(0.1).name('Rotation Position').onChange(
+                    function(value) {
+                        skydome.rotation.y = myOptions.ROTATION_ANGLE;
+                    });
+        // folder1.open();
 
         // event listeners
 
@@ -212,7 +203,7 @@ body {
                         + myOptions.TEXTURE_FILE + '.jpg')
         }));
         skydome.scale.x = -1;
-        skydome.rotation.y = -Math.PI / 2;
+        skydome.rotation.y = myOptions.ROTATION_ANGLE;
         scene.add(skydome);
     }
 
@@ -233,9 +224,9 @@ body {
         gui.update();
         oculusRiftMousePointerHelper.update();
 
-        if (myOptions.ROTATION_X_AXIS) {
-            skydome.rotation.y = (skydome.rotation.y + 0.005 * myOptions.ROTATION_SPEED) % (Math.PI * 2);
-            myOptions.ROTATION_ANGLE = skydome.rotation.x;
+        if (myOptions.ROTATION_AUTOMATIC) {
+            skydome.rotation.y = (skydome.rotation.y + 0.001 * myOptions.ROTATION_SPEED) % (Math.PI * 2);
+            myOptions.ROTATION_ANGLE = skydome.rotation.y;
         }
 
         effect.render(scene, camera);
