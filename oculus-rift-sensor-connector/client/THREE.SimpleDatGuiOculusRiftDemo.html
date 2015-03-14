@@ -34,21 +34,20 @@ body {
 <script src="./THREE.OculusRiftMouse.js"></script>
 <script src="./THREE.OculusRiftControls.js"></script>
 <script>
-    var skydome, controlOculus, effect, camera, scene, renderer, mesh, gui, trackbarControl, container, hemiLight, oculusRiftMousePointerHelper;
+    var skydome, video, texture, controlOculus, effect, camera, scene, renderer, mesh, gui, trackbarControl, container, hemiLight, oculusRiftMousePointerHelper;
 
     function myOptionsDefinition() {
         "use strict";
         return {
                     USE_OCULUS_CONTROL: false,
-                    AUTOMATIC: true,
+                    FIXED_POSITION: false,
                     TRANPARENT: true,
                     OPACITY: 60,
                     TEXTURE_FILE: 'Place de la Concorde Paris',
                     TEXTURE_FILE_RESOLUTION: 'medium',
                     ROTATION_SPEED: 0.5,
-                    ROTATION_ANGLE: Math.PI,
+                    ROTATION_ANGLE: Math.PI / 2 * 3,
                     ROTATION_AUTOMATIC: false,
-
         };
     }
     var myOptions = myOptionsDefinition();
@@ -131,16 +130,15 @@ body {
                     width: gui_width,
                     scale: gui_scale,
                     position: new THREE.Vector3(-gui_width * gui_scale / 2, 150, -400),
-                    automatic: myOptions.AUTOMATIC
+                    automatic: !myOptions.FIXED_POSITION
         });
 
         gui.add(myFunctions, 'RESET_EVENT').name('Reset Position');
         gui.add(myOptions, 'TRANPARENT').name('Tranparent').onChange(function(value) {
             myOptions.OPACITY = (value) ? 60 : 100;
         });
-        gui.add(myOptions, 'ROTATION_AUTOMATIC').name('Automatic Rotation');
-        gui.add(myOptions, 'AUTOMATIC').name('HUD Mode').onChange(function(value) {
-            gui.setAutomatic(myOptions.AUTOMATIC);
+        gui.add(myOptions, 'FIXED_POSITION').name('Fixed').onChange(function(value) {
+            gui.setAutomatic(!myOptions.FIXED_POSITION);
         });
         gui.add(myOptions, 'USE_OCULUS_CONTROL').name('Use Oculus Control').onChange(function(value) {
             if (!value) {
@@ -166,6 +164,7 @@ body {
                     function(value) {
                         skydome.rotation.y = myOptions.ROTATION_ANGLE;
                     });
+        folder1.add(myOptions, 'ROTATION_AUTOMATIC').name('Automatic Rotation');
         // folder1.open();
 
         // event listeners
@@ -196,12 +195,14 @@ body {
 
     }
 
-    function createSkyDome() {
+    function createSkyDome(texture) {
         scene.remove(skydome);
+
         skydome = new THREE.Mesh(new THREE.SphereGeometry(6000, 32, 32), new THREE.MeshBasicMaterial({
             map: THREE.ImageUtils.loadTexture('./textures/' + myOptions.TEXTURE_FILE_RESOLUTION + '/'
                         + myOptions.TEXTURE_FILE + '.jpg')
         }));
+
         skydome.scale.x = -1;
         skydome.rotation.y = myOptions.ROTATION_ANGLE;
         scene.add(skydome);
