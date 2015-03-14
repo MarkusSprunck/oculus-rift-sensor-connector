@@ -44,7 +44,8 @@ body {
                     USE_OCULUS_CONTROL: true,
                     TRANPARENT: true,
                     OPACITY: 60,
-
+                    TEXTURE_FILE: 'Parc de Belleville Paris',
+                    TEXTURE_FILE_RESOLUTION: 'medium',
                     RENDER_TEXT: "Hello World!",
                     ROTATION_SPEED: 0.5,
                     ROTATION_ANGLE: 0.0,
@@ -72,20 +73,14 @@ body {
         camera.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, sceneDistance));
         camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-        // skydome
-
-        skydome = new THREE.Mesh(new THREE.SphereGeometry(6000, 32, 32), new THREE.MeshBasicMaterial({
-            //      map: THREE.ImageUtils.loadTexture('./textures/Place_de_la_Concorde,_Paris_March_2007.jpg')
-            map: THREE.ImageUtils.loadTexture('./textures/Parc_de_Belleville,_Paris_June_2007.jpg')
-        }));
-        skydome.scale.x = -1;
-        skydome.rotation.y = -Math.PI / 2;
-
         // scene 
 
         scene = new THREE.Scene();
         scene.add(camera);
-        scene.add(skydome);
+
+        // skydome
+
+        createSkyDome();
 
         // renderer
 
@@ -151,6 +146,15 @@ body {
                 myFunctions.RESET_EVENT();
             }
         });
+        gui.add(myOptions, 'TEXTURE_FILE',
+                    ['Place de la Concorde Paris', 'Place Dauphine Paris', 'Parc de Belleville Paris']).name('Scene')
+                    .onChange(function(value) {
+                        createSkyDome();
+                    });
+        gui.add(myOptions, 'TEXTURE_FILE_RESOLUTION', ['high', 'medium', 'low']).name('Resolution').onChange(
+                    function(value) {
+                        createSkyDome();
+                    });
 
         var folder1 = gui.addFolder("Advanced Options");
         folder1.add(myOptions, 'RENDER_TEXT').name('Render Text').onChange(function(value) {
@@ -199,6 +203,17 @@ body {
             }
         }, 40);
 
+    }
+
+    function createSkyDome() {
+        scene.remove(skydome);
+        skydome = new THREE.Mesh(new THREE.SphereGeometry(6000, 32, 32), new THREE.MeshBasicMaterial({
+            map: THREE.ImageUtils.loadTexture('./textures/' + myOptions.TEXTURE_FILE_RESOLUTION + '/'
+                        + myOptions.TEXTURE_FILE + '.jpg')
+        }));
+        skydome.scale.x = -1;
+        skydome.rotation.y = -Math.PI / 2;
+        scene.add(skydome);
     }
 
     function onWindowResize() {
