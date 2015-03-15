@@ -1177,7 +1177,7 @@ THREE.SimpleDatGuiControl.__internals.prototype.createLabelMarker = function() {
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
         this.material.visible = that.isVisible() && !that.isClosed;
-        this.rotation.z = (that.folderIsHidden) ? -Math.PI / 4 * 3 : -Math.PI / 4;
+        this.rotation.z += (that.folderIsHidden) ? -Math.PI / 4 * 3 : -Math.PI / 4;
     };
     that.parent.scene.add(that.wLabelMarker);
 }
@@ -1427,7 +1427,7 @@ THREE.SimpleDatGuiControl.__internals.prototype.createComboBoxMarker = function(
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
         this.material.visible = that.isVisible() && !that.isClosed;
-        this.rotation.z = -3 * Math.PI / 4;
+        this.rotation.z += -3 * Math.PI / 4;
     };
     that.parent.scene.add(that.wComboBoxMarker);
 }
