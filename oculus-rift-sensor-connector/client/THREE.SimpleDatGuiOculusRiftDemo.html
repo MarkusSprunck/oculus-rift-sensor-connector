@@ -12,17 +12,16 @@ body {
 
 .absoluteTitle {
 	position: absolute;
-	top: 0px;
-	left: 0px;
-	color: #FFAA00;
+	bottom: 10px;
+	right: 10px;
+	color: #FFFFFF;
 	font-family: Arial;
-	font-size: 10pt;
-	text-align: center;
+	font-size: 12pt;
 }
 </style>
 </head>
 <body>
-<div class="absoluteTitle">THREE.SimpleDatGuiOculusRiftDemo.html - click right mouse button to toggle GUI and run OculusRiftSensorConnector.jar on local machine to get Oculus Rift sensor data. Fork source code on <a href="https://github.com/MarkusSprunck/oculus-rift-sensor-connector/tree/master/oculus-rift-sensor-connector">GitHub</a>.
+<div class="absoluteTitle">Click right mouse button to toggle GUI and run <a href="https://github.com/MarkusSprunck/oculus-rift-sensor-connector/tree/master/oculus-rift-sensor-connector">OculusRiftSensorConnector</a> on local machine to get Oculus Rift sensor data.
 </div>
 <script src="./lib/three.min.js"></script>
 <script src="./lib/TrackballControls.js"></script>
@@ -34,140 +33,64 @@ body {
 <script src="./THREE.OculusRiftMouse.js"></script>
 <script src="./THREE.OculusRiftControls.js"></script>
 <script>
-    var skydome, video, texture, controlOculus, effect, camera, scene, renderer, mesh, gui, trackbarControl, container, hemiLight, oculusRiftMousePointerHelper;
+    // global 
 
-    function myOptionsDefinition() {
+    var scene, renderer, skydome, camera, effect, gui, oculusRiftMouse, trackbarControl, oculusRiftControl;
+
+    // options 
+
+    function createGuiOptionsDefinition() {
         "use strict";
         return {
-                    USE_OCULUS_CONTROL: false,
-                    FIXED_POSITION: false,
                     TRANPARENT: true,
-                    OPACITY: 60,
+                    FIXED_POSITION: false,
+                    USE_OCULUS_CONTROL: false,
                     TEXTURE_FILE: 'Place de la Concorde Paris',
                     TEXTURE_FILE_RESOLUTION: 'medium',
+                    URL: "",
+                    OPACITY: 80,
                     ROTATION_SPEED: 0.5,
                     ROTATION_ANGLE: Math.PI / 2 * 3,
                     ROTATION_AUTOMATIC: false,
+                    SCENE_DISTANCE: 50,
+                    GUI_WIDTH: 280,
+                    GUI_SCALE: 1.5
         };
     }
-    var myOptions = myOptionsDefinition();
+    var gui_options = createGuiOptionsDefinition();
 
-    var sceneDistance = 50;
-    var gui_width = 280;
-    var gui_scale = 1.5;
+    var myFunctions = {
+        RESET_EVENT: function() {
+            trackbarControl.reset();
+            camera.position.x = 0;
+            camera.position.y = 0;
+            camera.position.z = gui_options.SCENE_DISTANCE;
+            camera.rotation.x = 0;
+            camera.rotation.y = 0;
+            camera.rotation.z = 0;
+            camera.lookAt(new THREE.Vector3(0, 0, 0));
+        }
+    };
 
     init();
-
     animate();
 
     function init() {
         "use strict";
 
-        // camera
-
-        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 4000);
-        camera.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, sceneDistance));
-        camera.lookAt(new THREE.Vector3(0, 0, 0));
-
-        // scene 
-
-        scene = new THREE.Scene();
-        scene.add(camera);
-
-        // skydome
-
+        createCamera();
+        createScene();
         createSkyDome();
+        createRenderer();
+        createTrackbarControl();
+        createOculusRiftEffect();
+        createOculusRiftControl();
+        createOculusRiftMouse();
+        createGui();
+        createEventListeners();
+    }
 
-        // renderer
-
-        renderer = new THREE.WebGLRenderer({
-            antialias: true
-        });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.gammaInput = true;
-        renderer.gammaOutput = true;
-        renderer.shadowMapEnabled = false;
-        document.body.appendChild(renderer.domElement);
-
-        // oculus rift effect
-
-        effect = new THREE.OculusRiftEffect(renderer);
-
-        // oculus rift controls
-
-        controlOculus = new THREE.OculusRiftRotationControls(camera, sceneDistance, new THREE.Vector3(0, 0, 0));
-
-        // oculus rift mouse pointer
-
-        oculusRiftMousePointerHelper = new THREE.OculusRiftMousePointerHelper({
-                    camera: camera,
-                    domElement: renderer.domElement
-        });
-        scene.add(oculusRiftMousePointerHelper);
-
-        // gui
-
-        var myFunctions = {
-            RESET_EVENT: function() {
-                trackbarControl.reset();
-                camera.position.x = 0;
-                camera.position.y = 0;
-                camera.position.z = sceneDistance;
-                camera.rotation.x = 0;
-                camera.rotation.y = 0;
-                camera.rotation.z = 0;
-                camera.lookAt(new THREE.Vector3(0, 0, 0));
-            }
-        };
-
-        trackbarControl = new THREE.TrackballControls(camera, renderer.domElement);
-        trackbarControl.noZoom = true;
-
-        gui = new THREE.SimpleDatGui({
-                    scene: scene,
-                    camera: camera,
-                    renderer: renderer,
-                    width: gui_width,
-                    scale: gui_scale,
-                    position: new THREE.Vector3(-gui_width * gui_scale / 2, 150, -400),
-                    automatic: !myOptions.FIXED_POSITION
-        });
-
-        gui.add(myFunctions, 'RESET_EVENT').name('Reset Position');
-        gui.add(myOptions, 'TRANPARENT').name('Tranparent').onChange(function(value) {
-            myOptions.OPACITY = (value) ? 60 : 100;
-        });
-        gui.add(myOptions, 'FIXED_POSITION').name('Fixed').onChange(function(value) {
-            gui.setAutomatic(!myOptions.FIXED_POSITION);
-        });
-        gui.add(myOptions, 'USE_OCULUS_CONTROL').name('Use Oculus Control').onChange(function(value) {
-            if (!value) {
-                myFunctions.RESET_EVENT();
-            }
-        });
-        gui.add(myOptions, 'TEXTURE_FILE',
-                    ['Place de la Concorde Paris', 'Place Dauphine Paris', 'Parc de Belleville Paris']).name('Scene')
-                    .onChange(function(value) {
-                        createSkyDome();
-                    });
-        gui.add(myOptions, 'TEXTURE_FILE_RESOLUTION', ['high', 'medium', 'low']).name('Resolution').onChange(
-                    function(value) {
-                        createSkyDome();
-                    });
-
-        var folder1 = gui.addFolder("Advanced Options");
-        folder1.add(myOptions, 'OPACITY', 10, 100).step(10).name('Opacity').onChange(function(value) {
-            myOptions.TRANPARENT = !(value == 100);
-        });
-        folder1.add(myOptions, 'ROTATION_SPEED', -5, 5).step(0.5).name('Rotation Speed');
-        folder1.add(myOptions, 'ROTATION_ANGLE', 0, Math.PI * 2).step(0.1).name('Rotation Position').onChange(
-                    function(value) {
-                        skydome.rotation.y = myOptions.ROTATION_ANGLE;
-                    });
-        folder1.add(myOptions, 'ROTATION_AUTOMATIC').name('Automatic Rotation');
-        // folder1.open();
-
-        // event listeners
+    function createEventListeners() {
 
         window.addEventListener('resize', onWindowResize, false);
 
@@ -175,6 +98,9 @@ body {
             if (event.which == 3) {
                 if (gui.isHidden()) {
                     gui.show();
+                    if (gui_options.FIXED_POSITION) {
+                        myFunctions.RESET_EVENT();
+                    }
                 } else {
                     gui.hide();
                 }
@@ -183,28 +109,125 @@ body {
 
         onWindowResize();
 
-        controlOculus.importData();
-
         var updateTimerImport = setInterval(function() {
-            if (myOptions.USE_OCULUS_CONTROL) {
-                controlOculus.update();
+            if (gui_options.USE_OCULUS_CONTROL) {
+                oculusRiftControl.update();
             } else {
                 trackbarControl.update();
             }
         }, 40);
-
     }
 
-    function createSkyDome(texture) {
-        scene.remove(skydome);
+    function createOculusRiftMouse() {
+        oculusRiftMouse = new THREE.OculusRiftMousePointerHelper({
+                    camera: camera,
+                    domElement: renderer.domElement
+        });
+        scene.add(oculusRiftMouse);
+    }
 
-        skydome = new THREE.Mesh(new THREE.SphereGeometry(6000, 32, 32), new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture('./textures/' + myOptions.TEXTURE_FILE_RESOLUTION + '/'
-                        + myOptions.TEXTURE_FILE + '.jpg')
-        }));
+    function createOculusRiftControl() {
+        var offset = new THREE.Vector3(0, 0, 0);
+        oculusRiftControl = new THREE.OculusRiftRotationControls(camera, gui_options.SCENE_DISTANCE, offset);
+        gui_options.URL = oculusRiftControl.getUrl();
+    }
 
+    function createTrackbarControl() {
+        trackbarControl = new THREE.TrackballControls(camera, renderer.domElement);
+        trackbarControl.noZoom = true;
+    }
+
+    function createOculusRiftEffect() {
+        effect = new THREE.OculusRiftEffect(renderer);
+    }
+
+    function createCamera() {
+        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 4000);
+        camera.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, gui_options.SCENE_DISTANCE));
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+    }
+
+    function createScene() {
+        scene = new THREE.Scene();
+        scene.add(camera);
+    }
+
+    function createRenderer() {
+        renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.gammaInput = true;
+        renderer.gammaOutput = true;
+        renderer.shadowMapEnabled = false;
+        document.body.appendChild(renderer.domElement);
+    }
+
+    function createGui() {
+
+        gui = new THREE.SimpleDatGui({
+                    scene: scene,
+                    camera: camera,
+                    renderer: renderer,
+                    width: gui_options.GUI_WIDTH,
+                    scale: gui_options.GUI_SCALE,
+                    position: new THREE.Vector3(-gui_options.GUI_WIDTH * gui_options.GUI_SCALE / 2, 150, -400),
+                    automatic: !gui_options.FIXED_POSITION
+        });
+
+        gui.add(myFunctions, 'RESET_EVENT').name('Reset Position');
+        gui.add(gui_options, 'TRANPARENT').name('Tranparent').onChange(function(value) {
+            gui_options.OPACITY = (value) ? 80 : 100;
+        });
+        gui.add(gui_options, 'TEXTURE_FILE',
+                    ['Place de la Concorde Paris', 'Place Dauphine Paris', 'Parc de Belleville Paris']).name('Scene')
+                    .onChange(function(value) {
+                        createSkyDome();
+                    });
+        gui.add(gui_options, 'TEXTURE_FILE_RESOLUTION', ['high', 'medium', 'low']).name('Resolution').onChange(
+                    function(value) {
+                        createSkyDome();
+                    });
+
+        var folder1 = gui.addFolder("Advanced Options");
+        folder1.add(gui_options, 'USE_OCULUS_CONTROL').name('Oculus Control').onChange(function(value) {
+            if (!value) {
+                myFunctions.RESET_EVENT();
+            }
+        });
+        folder1.add(gui_options, 'URL').name('Oculus Control URL').onChange(function(value) {
+            oculusRiftControl.setUrl(value);
+        });
+        folder1.add(gui_options, 'OPACITY', 10, 100).step(10).name('Opacity').onChange(function(value) {
+            gui_options.TRANPARENT = !(value == 100);
+        });
+        folder1.add(gui_options, 'ROTATION_ANGLE', 0, Math.PI * 2).step(0.1).name('Rotation Position').onChange(
+                    function(value) {
+                        skydome.rotation.y = gui_options.ROTATION_ANGLE;
+                    });
+        folder1.add(gui_options, 'ROTATION_SPEED', -5, 5).step(0.5).name('Rotation Speed');
+        folder1.add(gui_options, 'ROTATION_AUTOMATIC').name('Automatic Rotation');
+        folder1.add(gui_options, 'FIXED_POSITION').name('Fixed GUI Position').onChange(function(value) {
+            gui.setAutomatic(!gui_options.FIXED_POSITION);
+        });
+    }
+
+    function createSkyDome() {
+
+        if (typeof skydome !== "undefined") {
+            scene.remove(skydome);
+        }
+
+        var path = './textures/' + gui_options.TEXTURE_FILE_RESOLUTION + '/' + gui_options.TEXTURE_FILE + '.jpg';
+        var texture = THREE.ImageUtils.loadTexture(path);
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        var material = new THREE.MeshBasicMaterial({
+            map: texture
+        })
+        skydome = new THREE.Mesh(new THREE.SphereGeometry(6000, 32, 32), material);
         skydome.scale.x = -1;
-        skydome.rotation.y = myOptions.ROTATION_ANGLE;
+        skydome.rotation.y = gui_options.ROTATION_ANGLE;
         scene.add(skydome);
     }
 
@@ -221,13 +244,14 @@ body {
 
         requestAnimationFrame(animate);
 
-        gui.setOpacity(myOptions.OPACITY);
+        gui.setOpacity(gui_options.OPACITY);
         gui.update();
-        oculusRiftMousePointerHelper.update();
 
-        if (myOptions.ROTATION_AUTOMATIC) {
-            skydome.rotation.y = (skydome.rotation.y + 0.001 * myOptions.ROTATION_SPEED) % (Math.PI * 2);
-            myOptions.ROTATION_ANGLE = skydome.rotation.y;
+        oculusRiftMouse.update();
+
+        if (gui_options.ROTATION_AUTOMATIC) {
+            skydome.rotation.y = (skydome.rotation.y + 0.001 * gui_options.ROTATION_SPEED) % (Math.PI * 2);
+            gui_options.ROTATION_ANGLE = skydome.rotation.y;
         }
 
         effect.render(scene, camera);

@@ -34,6 +34,7 @@ THREE.OculusRiftRotationControls = function(camera, scale, position) {
     this.lastId = -1;
     this.scale = scale;
     this.position = position;
+    this.url = "http:\\\\localhost:8444";
 
     this.controller = new THREE.Object3D();
     this.headPos = new THREE.Vector3();
@@ -70,11 +71,11 @@ THREE.OculusRiftRotationControls = function(camera, scale, position) {
     this.importData = function() {
         "use strict";
 
-        g_lastUpdateRequest = new Date().getTime();
-        var url = "http://localhost:8444";
+        g_lastUpdateRequest = new Date().getTime();       
         var script = document.createElement("script");
         script.setAttribute("type", "application/javascript");
         script.id = 'JSONP';
+        var url = this.url;
         url += "?" + g_lastUpdateRequest;
         script.setAttribute("src", url);
         document.body.appendChild(script);
@@ -86,8 +87,20 @@ THREE.OculusRiftRotationControls = function(camera, scale, position) {
                     delete script[prop];
                 }
             }
-        }, 50);
+        }, 20);
 
+    }
+    
+    this.getUrl = function() {
+        "use strict";
+   
+        return this.url;
+    }
+    
+    this.setUrl = function(url) {
+        "use strict";
+      
+        this.url = url;
     }
 
 };
