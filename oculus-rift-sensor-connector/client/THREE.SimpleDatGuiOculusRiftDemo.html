@@ -60,7 +60,7 @@ body {
                     FIXED_POSITION: false,
                     USE_OCULUS_CONTROL: false,
                     TEXTURE_FILE: 'Place de la Concorde Paris',
-                    TEXTURE_FILE_RESOLUTION: 'medium',
+                    TEXTURE_FILE_RESOLUTION: 'low',
                     URL: "",
                     OPACITY: 80,
                     ROTATION_SPEED: 0.5,
@@ -198,7 +198,7 @@ body {
                     .onChange(function(value) {
                         createSkyDome();
                     });
-        gui.add(gui_options, 'TEXTURE_FILE_RESOLUTION', ['high', 'medium', 'low']).name('Resolution').onChange(
+        gui.add(gui_options, 'TEXTURE_FILE_RESOLUTION', ['low', 'medium', 'high']).name('Resolution').onChange(
                     function(value) {
                         createSkyDome();
                     });
