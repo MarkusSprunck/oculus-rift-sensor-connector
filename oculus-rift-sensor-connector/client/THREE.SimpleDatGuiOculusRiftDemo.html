@@ -29,6 +29,7 @@ body {
 <script src="./lib/AxisHelper.js"></script>
 <script src="./lib/helvetiker_regular.typeface.js"></script>
 <script src="./lib/OculusRiftEffect.js"></script>
+<script src="./lib/hashmap.js"></script>
 <script src="./THREE.SimpleDatGui.js"></script>
 <script src="./THREE.OculusRiftMouse.js"></script>
 <script src="./THREE.OculusRiftControls.js"></script>
@@ -38,6 +39,19 @@ body {
     var scene, renderer, skydome, camera, effect, gui, oculusRiftMouse, trackbarControl, oculusRiftControl;
 
     // options 
+    
+    var pictureMap = new HashMap();
+    pictureMap.put("Place de la Concorde Paris-high" , "./textures/high/Place_de_la_Concorde_Paris.jpg");
+    pictureMap.put("Place de la Concorde Paris-medium" , "./textures/medium/Place_de_la_Concorde_Paris.jpg");
+    pictureMap.put("Place de la Concorde Paris-low" , "./textures/low/Place_de_la_Concorde_Paris.jpg");   	
+    
+    pictureMap.put("Place Dauphine Paris-high" , "./textures/high/Place_Dauphine_Paris.jpg");
+    pictureMap.put("Place Dauphine Paris-medium" , "./textures/medium/Place_Dauphine_Paris.jpg");
+    pictureMap.put("Place Dauphine Paris-low" , "./textures/low/Place_Dauphine_Paris.jpg");   	
+  
+    pictureMap.put("Parc de Belleville Paris-high" , "./textures/high/Parc_de_Belleville_Paris.jpg");
+    pictureMap.put("Parc de Belleville Paris-medium" , "./textures/medium/Parc_de_Belleville_Paris.jpg");
+    pictureMap.put("Parc de Belleville Paris-low" , "./textures/low/Parc_de_Belleville_Paris.jpg");   	
 
     function createGuiOptionsDefinition() {
         "use strict";
@@ -218,7 +232,7 @@ body {
             scene.remove(skydome);
         }
 
-        var path = './textures/' + gui_options.TEXTURE_FILE_RESOLUTION + '/' + gui_options.TEXTURE_FILE + '.jpg';
+        var path = pictureMap.get(gui_options.TEXTURE_FILE + '-'+  gui_options.TEXTURE_FILE_RESOLUTION);
         var texture = THREE.ImageUtils.loadTexture(path);
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;
