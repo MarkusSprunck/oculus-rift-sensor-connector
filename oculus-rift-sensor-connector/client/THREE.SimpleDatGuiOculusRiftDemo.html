@@ -55,9 +55,9 @@ body {
     function createGuiOptionsDefinition() {
         "use strict";
         return {
-                    TRANPARENT: true,
+                    TRANPARENT: false,
                     FIXED_POSITION: false,
-                    TEXTURE_FILE: 'Place de la Concorde Paris',
+                    TEXTURE_FILE: 'Parc de Belleville Paris',
                     TEXTURE_FILE_RESOLUTION: 'low',
                     URL: "",
                     OPACITY: 80,
@@ -143,7 +143,8 @@ body {
                         } else {
                             trackbarControl.update();
                         }
-
+            			oculusRiftMouse.update();
+                   
                         var stausLine = document.getElementById('statusLine');
                         stausLine.innerHTML = ((oculusRiftControl.isOculusRiftConnected() ? '' : 'NOT ') + 'CONNECTED TO OCULUS RIFT');
 
@@ -151,11 +152,11 @@ body {
     }
 
     function createOculusRiftMouse() {
-        oculusRiftMouse = new THREE.OculusRiftMousePointerHelper({
+        oculusRiftMouse = new THREE.OculusRiftMousePointerHelper(scene, {
                     camera: camera,
                     domElement: renderer.domElement
         });
-        scene.add(oculusRiftMouse);
+      
     }
 
     function createOculusRiftControl() {
@@ -238,6 +239,7 @@ body {
         folder1.add(gui_options, 'FIXED_POSITION').name('Fixed GUI Position').onChange(function(value) {
             gui.setAutomatic(!gui_options.FIXED_POSITION);
         });
+        folder1.open();
     }
 
     function createSkyDome() {
@@ -275,8 +277,7 @@ body {
         gui.setOpacity(gui_options.OPACITY);
         gui.update();
 
-        oculusRiftMouse.update();
-
+     
         if (gui_options.ROTATION_AUTOMATIC) {
             skydome.rotation.y = (skydome.rotation.y + 0.001 * gui_options.ROTATION_SPEED) % (Math.PI * 2);
             gui_options.ROTATION_ANGLE = skydome.rotation.y;
