@@ -29,7 +29,7 @@
 THREE.SimpleDatGui = function(parameters) {
     "use strict";
 
-    console.log('THREE.SimpleDatGui v0.83');
+    console.log('THREE.SimpleDatGui v0.83.1');
 
     // Check mandatory parameter
     if ((typeof parameters === "undefined") || (typeof parameters.scene === "undefined")) {
@@ -48,8 +48,7 @@ THREE.SimpleDatGui = function(parameters) {
     // Assign optional parameter
     this.width = (parameters.width !== undefined) ? parameters.width * parameters.scale : 300;
     this.position = (parameters.position !== undefined) ? parameters.position : new THREE.Vector3(-150, 100, 150);
-    this.rotation = (parameters.rotationX !== undefined) ? new THREE.Vector3(parameters.rotationX, 0, 0)
-                : new THREE.Vector3(0, 0, 0);
+    this.rotation = (parameters.rotation !== undefined) ? parameters.rotation : new THREE.Vector3(0, 0, 0);
     this.scale = (parameters.scale !== undefined) ? parameters.scale : 1;
     this.automatic = (parameters.automatic !== undefined) ? parameters.automatic : false;
     this.mouse = (parameters.mouse !== undefined) ? parameters.mouse : null;
