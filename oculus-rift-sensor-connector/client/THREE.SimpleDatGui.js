@@ -29,7 +29,7 @@
 THREE.SimpleDatGui = function(parameters) {
     "use strict";
 
-    console.log('THREE.SimpleDatGui v0.83.1');
+    console.log('THREE.SimpleDatGui v0.83.2');
 
     // Check mandatory parameter
     if ((typeof parameters === "undefined") || (typeof parameters.scene === "undefined")) {
@@ -931,13 +931,16 @@ THREE.SimpleDatGuiControl.__internals.prototype.createArea = function() {
 
         this.material.opacity = that.parent._private.opacityGui * 0.01;
         this.material.visible = that.isVisible() && !that.isClosed;
-        if (that.isElementFolder && that.isCloseButton) {
+        if (that.isCloseButton) {
             var color = (that.parent._private.selected === that) ? $.COLOR_BASE_CLOSE_BUTTON : $.COLOR_SELECTED;
             this.material.color.setHex(color);
-        } else if (that.parent._private.selected === that && ((that.isCheckBoxControl()) || (that.isFunctionControl()))) {
-            this.material.color.setHex($.COLOR_SELECTED);
         } else {
-            this.material.color.setHex($.COLOR_BASE_CLOSE_BUTTON);
+            if (that.parent._private.selected === that
+                        && (that.isCheckBoxControl() || that.isFunctionControl() || that.isElementFolder)) {
+                this.material.color.setHex($.COLOR_SELECTED);
+            } else {
+                this.material.color.setHex($.COLOR_BASE_CLOSE_BUTTON);
+            }
         }
     };
     that.parent.scene.add(that.wArea);
