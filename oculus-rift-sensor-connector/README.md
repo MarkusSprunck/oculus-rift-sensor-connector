@@ -25,9 +25,9 @@ The example client demonstrates the use of *THREE.SimpleDatGui* for Oculus Rift.
 Tested Configurations
 ---------------------
 The application has been tested with the following browsers on Windows 7 with Oculus Rift DK2:
-* Chrome 41 
-* Firefox 36 
-* Internet Explorer 11 (quite slow for Oculus Rift, but works)
+* Chrome 41 (60 FPS)
+* Firefox 36 (60 FPS)
+* Internet Explorer 11 (8 FPS, definitely to slow for Oculus Rift)
 
 Chrome Options for Local Development 
 ------------------------------------

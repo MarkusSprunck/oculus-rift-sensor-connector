@@ -20,7 +20,7 @@ body {
 }
 
 #forkongithub a {
-	background: #0DE5A8;
+	background: #8181F7;
 	color: #fff;
 	text-decoration: none;
 	font-family: arial, sans-serif;
@@ -39,7 +39,7 @@ body {
 }
 
 #forkongithub a:hover {
-	background: #53E6CF;
+	background: #2E2EFE;
 	color: #fff;
 }
 
@@ -87,7 +87,7 @@ body {
 </head>
 <body>
 <div class=absoluteStatusLine id="statusLine"></div>
-<span id="forkongithub"><a href="https://github.com/MarkusSprunck/oculus-rift-sensor-connector">Fork me on GitHub</a></span>
+<span id="forkongithub"><a href="https://github.com/MarkusSprunck/oculus-rift-sensor-connector/tree/master/oculus-rift-sensor-connector">Fork me on GitHub</a></span>
 <script src="./lib/three.min.js"></script>
 <script src="./lib/TrackballControls.js"></script>
 <script src="./lib/stats.min.js"></script>
@@ -101,7 +101,7 @@ body {
 <script>
     // global 
 
-    var scene, renderer, skydome, camera, effect, gui, oculusRiftMouse, trackbarControl, oculusRiftControl;
+    var scene, renderer, skydome, camera, effect, gui, oculusRiftMouse, trackbarControl, oculusRiftControl, stats;
 
     // options 
 
@@ -150,6 +150,8 @@ body {
             camera.lookAt(new THREE.Vector3(0, 0, 0));
         }
     };
+    var guiBorderTop = 10;
+    var guiBorderRight = 10;
 
     init();
     animate();
@@ -167,6 +169,16 @@ body {
         createOculusRiftMouse();
         createGui();
         createEventListeners();
+        createStats();
+    }
+
+    function createStats() {
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '' + guiBorderTop + 'px';
+        stats.domElement.style.right = '' + guiBorderRight + 'px';
+        stats.domElement.style.zIndex = 100;
+        document.body.appendChild(stats.domElement);
     }
 
     function createEventListeners() {
@@ -309,7 +321,7 @@ body {
         folder1.add(gui_options, 'FIXED_POSITION').name('Fixed GUI Position').onChange(function(value) {
             gui.setAutomatic(!gui_options.FIXED_POSITION);
         });
-        folder1.open();
+        // folder1.open();
     }
 
     function createSkyDome() {
@@ -346,6 +358,8 @@ body {
 
         gui.setOpacity(gui_options.OPACITY);
         gui.update();
+
+        stats.update();
 
         if (gui_options.ROTATION_AUTOMATIC) {
             skydome.rotation.y = (skydome.rotation.y + 0.001 * gui_options.ROTATION_SPEED) % (Math.PI * 2);
