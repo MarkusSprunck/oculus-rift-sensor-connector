@@ -29,7 +29,7 @@
 THREE.SimpleDatGui = function(parameters) {
     "use strict";
 
-    console.log('THREE.SimpleDatGui v0.83.2');
+    console.log('THREE.SimpleDatGui v0.83.3');
 
     // Check mandatory parameter
     if ((typeof parameters === "undefined") || (typeof parameters.scene === "undefined")) {
@@ -364,7 +364,7 @@ THREE.SimpleDatGui.__internals.prototype.onMouseMoveEvt = function(event) {
             }
         } else {
             if (element.isComboBoxControl()) {
-                this.gui.mouse.setMouse("pointer");
+                this.gui.mouse.setMouse("default");
             } else if (element.isTextControl()) {
                 this.gui.mouse.setMouse("text");
             } else if (element.isSliderControl()) {
