@@ -51,8 +51,6 @@ public class OculusRiftSensorConnector {
 
 	public static void main(final String[] args) throws UnknownHostException {
 
-		PropertyConfigurator.configure("log4j.properties");
-
 		LOGGER.info("Oculus Rift Sensor Connector is starting");
 
 		Hmd.initialize();
