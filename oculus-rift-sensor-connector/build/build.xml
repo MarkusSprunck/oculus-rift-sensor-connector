@@ -2,7 +2,7 @@
 <project default="create_run_jar" name="Create Runnable Jar for Project oculus-rift-sensor-connector">
 	<!--ANT 1.7 is required                                        -->
 	<target name="create_run_jar">
-		<jar destfile="../OculusRiftSensorConnector.jar" filesetmanifest="mergewithoutmain">
+		<jar destfile="../target/OculusRiftSensorConnector.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="OculusRiftSensorConnector" />
 				<attribute name="Class-Path" value="." />
