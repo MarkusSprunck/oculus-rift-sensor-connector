@@ -43,7 +43,8 @@ Credits for Equirectangular Pictures
 
 Credits for Libraries
 ---------------------
-* THREE.js (see https://github.com/mrdoob)
+* Ricardo Cabello for THREE.js (see https://github.com/mrdoob)
+* Daniel Kwiecinski for Hashmap.js
 	
 Read More
 ---------
