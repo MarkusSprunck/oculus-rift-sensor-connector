@@ -357,7 +357,7 @@ THREE.SimpleDatGui.__internals.prototype.onMouseMoveEvt = function(event) {
         } else {
             if (element.isComboBoxControl()) {
                 this.gui.mouse.setMouse("default");
-            } else if (element.isPropertyNumber()) {
+            } else if (element.isPropertyNumber() && typeof intersects[0].object.isTextValueField === "undefined") {
                 this.gui.mouse.setMouse("w-resize");
             } else if (element.isTextControl()) {
                 this.gui.mouse.setMouse("text");
@@ -1565,10 +1565,10 @@ THREE.SimpleDatGuiControl.prototype.listenInternal = function() {
                     value = Math.min(Math.max(value, that.minValue), that.maxValue);
                     that.scaling = (value - that.minValue) / (that.maxValue - that.minValue);
                     that._private.createValueSliderBar(that.scaling);
-                    
+
                     var newValue = (typeof value === "number") ? value : 0;
                     var digits = (parseInt(newValue) == newValue) ? 0 : 1;
-                    value= newValue.toFixed(digits);
+                    value = newValue.toFixed(digits);
                     if (value === "NaN") { return; }
                     that.newText = value;
                 } else {
