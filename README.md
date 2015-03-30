@@ -35,25 +35,24 @@ Chrome Options for Local Development - The Google Chrome browser will not load l
 Tested Configurations
 ---------------------
 The demo THREE.SimpleDatGuiOculusRiftDemo.html has been tested with the following browsers on Windows 7 with Oculus Rift DK2:
-* Chrome 41 (60 FPS)
-* Firefox 36 (60 FPS)
-* Internet Explorer 11 (8 FPS, definitely to slow for Oculus Rift)
+* Chrome 41 (~60 FPS)
+* Firefox 36 (~60 FPS)
+* Internet Explorer ~11 (8 FPS, definitely to slow for Oculus Rift)
 
 The component THREE.SimpleDatGui has been tested additionally on iOS 8.2 with iPad II with the following configurations: 
-* Safari (30 FPS)
-* Chrome (30 FPS)
+* Safari (~44 FPS)
+* Chrome (~44 FPS)
 
 Just open THREE.SimpleDatGuiDemo.html:
 * http://webgl-examples.appspot.com/simple-webgl-gui/THREE.SimpleDatGuiDemo.html?hud=false
 * http://webgl-examples.appspot.com/simple-webgl-gui/THREE.SimpleDatGuiDemo.html?hud=true
 
-Open Issues and Missing Features
+Missing Features
 --------------------------------
-* THREE.SimpleDatGui.js - Compared to DAT.GUI the color picker control is missing and the save & restore of values
-* THREE.SimpleDatGui.js - No copy & paste support in text and value controls
-* THREE.SimpleDatGui.js - value control - slider just accepts mouse click - no mouse drag
-* THREE.SimpleDatGui.js - in the case the scene is rotated in non fixed mode the location of the cursor in the text control is wrong
-* THREE.OculusRiftControls.js - performance and robustness should be improved
+* ColorPicker control 
+* Save & restore of values 
+* Copy & paste support in text and value controls
+* Slider accepts mouse drag (not only mouse click)
 
 Credits for Equirectangular Pictures
 ------------------------------------
