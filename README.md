@@ -1,5 +1,5 @@
-THREE.SimpleDatGuiOculusRiftDemo.html
--------------------------------------
+Simple GUI for Oculus Rift
+--------------------------
 Demonstrates the use of *THREE.SimpleDatGui* for Oculus Rift DK2. 
 
 *Just open http://webgl-examples.appspot.com/simple-webgl-gui-oculus-rift/THREE.SimpleDatGuiOculusRiftDemo.html and/or install this project locally.* 
