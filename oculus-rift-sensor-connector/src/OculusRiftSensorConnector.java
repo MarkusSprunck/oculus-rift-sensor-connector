@@ -36,8 +36,6 @@ import static com.oculusvr.capi.OvrLibrary.ovrTrackingCaps.ovrTrackingCap_Positi
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
 import com.oculusvr.capi.Hmd;
 
 /**
