@@ -1,0 +1,1 @@
+java -cp "./OculusRiftSensorConnector.jar" OculusRiftSensorConnector 23456

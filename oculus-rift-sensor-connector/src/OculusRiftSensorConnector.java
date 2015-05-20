@@ -47,11 +47,25 @@ public class OculusRiftSensorConnector {
 
 	private static final Logger LOGGER = Logger.getLogger(OculusRiftSensorConnector.class.getName());
 
-	private static final int port = 8444;
+	private static int port = 8444;
 
 	public static void main(final String[] args) throws UnknownHostException {
 
 		LOGGER.info("Oculus Rift Sensor Connector is starting");
+
+		if (args.length == 1) {
+			try {
+				int value = Integer.valueOf(args[0]);
+				if (value >= 1 || value <= 65535) {
+					port = value;
+				} else {
+					LOGGER.warn("Port number is not in valid range [1–65535]");
+				}
+			} catch (NumberFormatException e) {
+				LOGGER.warn("Parameter is not valid integer");
+			}
+		}
+		LOGGER.info("Use port " + port);
 
 		Hmd.initialize();
 		try {

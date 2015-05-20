@@ -52,7 +52,7 @@ class FetcherThread implements Runnable {
 	private static SensorData sensorData = new SensorData();
 
 	public synchronized String getLatestData() {
-		return "oculus_rift_callback({\"values\" : " + FetcherThread.sensorData.toString() + "});";
+		return FetcherThread.sensorData.toString();
 	}
 
 	public FetcherThread(final Hmd hmd) {
