@@ -99,7 +99,7 @@ public class OculusRiftSensorConnector {
 			LOGGER.error("Unable to get data from Oculus Rift, maybe device is not properly connected");
 		}
 
-		LOGGER.info("Oculus Rift Sensor Connector is stopped");
+		LOGGER.info("Oculus Rift Sensor Connector is stopped and simulation of movements started");
 	}
 
 }
